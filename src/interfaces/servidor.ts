@@ -16,7 +16,7 @@ const startServer = async () => {
             port: configuration.httpPuerto,
             host: '0.0.0.0'
         });
-        console.log(`Servidor iniciado en puerto ${configuration.httpPuerto}`);
+        console.log(`⚡🚀Servidor iniciado en puerto ${configuration.httpPuerto}⚡🚀`);
     } catch (err) {
         server.log.error(err);
         process.exit(1);
