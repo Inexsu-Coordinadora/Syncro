@@ -1,0 +1,55 @@
+API RUTAS - DOCUMENTACIÓN
+
+Clientes API
+============
+
+GET /clientes
+------------
+Descripción: Obtiene la lista de todos los clientes
+Método: GET
+Ruta: /clientes
+Respuesta: Array de clientes
+
+GET /clientes/:id
+----------------
+Descripción: Obtiene un cliente por su ID
+Método: GET
+Ruta: /clientes/:id
+Parámetros: 
+  - id (parámetro de ruta)
+Respuesta: Cliente individual
+Error: NotFoundError si el cliente no existe
+
+POST /clientes
+-------------
+Descripción: Crea un nuevo cliente
+Método: POST
+Ruta: /clientes
+Cuerpo: Datos del cliente
+Respuesta: Cliente creado
+
+DELETE /clientes/:id
+-------------------
+Descripción: Elimina un cliente por su ID
+Método: DELETE
+Ruta: /clientes/:id
+Parámetros:
+  - id (parámetro de ruta)
+Respuesta: Sin contenido (204)
+Error: NotFoundError si el cliente no existe
+
+Formato de Cliente
+=================
+{
+  "id": string,
+  "nombre": string,
+  "apellido": string,
+  "email": string,
+  "telefono": string
+}
+
+Notas
+=====
+- Todas las rutas devuelven errores 404 cuando el recurso no se encuentra
+- Los errores se devuelven en formato JSON con mensaje descriptivo
+- Las rutas son sensibles a mayúsculas/minúsculas

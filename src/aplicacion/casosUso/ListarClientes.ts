@@ -1,7 +1,7 @@
 import { ICliente } from "../../dominio/entidades/ICliente";
 import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
 
-export class listarClientes {
+export class ListarClientes {
     private repositorioCliente: IRepositorioCliente;
 
     constructor(repositorioCliente: IRepositorioCliente) {
