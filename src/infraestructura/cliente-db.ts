@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import { configuration } from "../configuracion/configuracion";
 
+
 const pool = new Pool({
     host: configuration.baseDatos.host,
     user: configuration.baseDatos.usuario,

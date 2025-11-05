@@ -1,4 +1,3 @@
-// src/Infraestructura/repositorios/RepositorioProyectoPostgres.ts
 import { FastifyInstance } from 'fastify';
 import { IProyecto } from '../../dominio/entidades/IProyecto';
 import { IRepositorioProyecto } from '../../dominio/repositorio/IRepositorioProyecto';

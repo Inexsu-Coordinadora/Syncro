@@ -6,7 +6,7 @@ import { ActualizarProyecto } from '../../aplicacion/casosUso/ActualizarProyecto
 import { EliminarProyecto } from '../../aplicacion/casosUso/EliminarProyecto';
 import { IProyecto } from '../../dominio/entidades/IProyecto';
 
-
+// Definición de las rutas para la entidad Proyecto
 export function proyectoRutas(
   crear: CrearProyecto,
   consultarTodos: ListarProyectos,
@@ -28,7 +28,7 @@ export function proyectoRutas(
 
     servidor.post('/', async (peticion: FastifyRequest<{ Body: IProyecto }>, respuesta: FastifyReply) => {
         try {
-            // Nota: El body de la petición debe ser el objeto IProyecto completo ahora
+        
             const nuevoProyecto = await crear.ejecutar(peticion.body);
             return respuesta.status(201).send(nuevoProyecto);
         } catch (error: any) {
