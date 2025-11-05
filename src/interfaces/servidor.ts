@@ -1,18 +1,11 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { configurarConexionBD } from '../configuracion/conexionBD';
-import { proyectoRutas } from './rutas/proyectoRutas';
-import { IRepositorioProyecto } from '../dominio/repositorio/IRepositorioProyecto'; 
-import { CrearProyecto } from '../aplicacion/casosUso/CrearProyecto';
-import { ListarProyectos } from '../aplicacion/casosUso/ListarProyectos';
-import { ObtenerProyectoPorId } from '../aplicacion/casosUso/ObtenerProyectoPorId';
-import { ActualizarProyecto } from '../aplicacion/casosUso/ActualizarProyecto';
-import { EliminarProyecto } from '../aplicacion/casosUso/EliminarProyecto';
-
 
 export const crearServidorBase = (): FastifyInstance => {
     const servidor = fastify({ logger: true });
     configurarConexionBD(servidor);
     return servidor;
+<<<<<<< HEAD
 }
 
 
@@ -58,3 +51,6 @@ const startServer = async () => {
 };
 
 startServer();
+=======
+}
+>>>>>>> d5736851b1ecd97eebada62980a771e97d2cd686
