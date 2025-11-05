@@ -1,7 +1,11 @@
 export interface ICliente {
     idCliente?: string;
     nombreCliente: string;
-    direccionCliente: string;
-    telefonoCliente?: string;
     emailCliente: string;
+    telefonoCliente: string;
+    direccionCliente: string;
+    empresaCliente?: string;
+
+    //proyectos?: IProyecto[]; // Relación con proyectos
+    //consultores?: IConsultor[];// Relación con consultores
 }

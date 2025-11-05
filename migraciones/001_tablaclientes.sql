@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS clientes (
     email_cliente VARCHAR(100) UNIQUE NOT NULL,
     telefono_cliente VARCHAR(20),
     direccion_cliente VARCHAR(200),
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    empresa_cliente VARCHAR(100)
 );

@@ -1,5 +1,5 @@
 import fastify from 'fastify';
-import { configuration } from '../configuracion';
+import { configuration } from '..';
 import { clienteRutas } from './rutas/clienteRutas';
 
 const server = fastify({

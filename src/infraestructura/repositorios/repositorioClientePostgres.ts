@@ -7,14 +7,15 @@ export class ClientePostgres implements IRepositorioCliente {
 
     async crearCliente(datosCliente: ICliente): Promise<ICliente> {
         const cliente = await ejecutarConsulta(
-            `INSERT INTO clientes (id_cliente, nombre_cliente, email_cliente, telefono_cliente, direccion_cliente)`
-            + `VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+            `INSERT INTO clientes (id_cliente, nombre_cliente, email_cliente, telefono_cliente, direccion_cliente, empresa_cliente)`
+            + `VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
             [
                 uuidv4(),
                 datosCliente.nombreCliente,
                 datosCliente.emailCliente,
                 datosCliente.telefonoCliente || '',
                 datosCliente.direccionCliente,
+                datosCliente.empresaCliente || '',
             ]
         );
         
@@ -36,14 +37,15 @@ export class ClientePostgres implements IRepositorioCliente {
     ): Promise<ICliente | null> {
         const clienteActualizado = await ejecutarConsulta(
             `UPDATE clientes
-            SET nombre_cliente = $1, email_cliente = $2, telefono_cliente = $3, direccion_cliente = $4
-            WHERE id_cliente = $5
+            SET nombre_cliente = $1, email_cliente = $2, telefono_cliente = $3, direccion_cliente = $4, empresa_cliente = $5
+            WHERE id_cliente = $6
             RETURNING *`,
             [
                 datosCliente.nombreCliente,
                 datosCliente.emailCliente,
                 datosCliente.telefonoCliente || '',
                 datosCliente.direccionCliente,
+                datosCliente.empresaCliente || '',
                 idCliente
             ]
         );
