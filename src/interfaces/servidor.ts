@@ -1,26 +1,36 @@
-import fastify from 'fastify';
-import { configuration } from '..';
-import { clienteRutas } from './rutas/clienteRutas';
+import fastify, { FastifyInstance } from 'fastify';
+import { configurarConexionBD } from '../configuracion/conexionBD';
+import { proyectoRutas } from './rutas/proyectoRutas';
+import { IRepositorioProyecto } from '../dominio/repositorio/IRepositorioProyecto'; 
+import { CrearProyecto } from '../aplicacion/casosUso/CrearProyecto';
+import { ListarProyectos } from '../aplicacion/casosUso/ListarProyectos';
+import { ObtenerProyectoPorId } from '../aplicacion/casosUso/ObtenerProyectoPorId';
+import { ActualizarProyecto } from '../aplicacion/casosUso/ActualizarProyecto';
+import { EliminarProyecto } from '../aplicacion/casosUso/EliminarProyecto';
 
-const server = fastify({
-    logger: true
-});
 
-// Registrar rutas
-server.register(clienteRutas, { prefix: '/clientes' });
+// La función ahora solo crea el servidor base y la conexión BD.
+export const crearServidorBase = (): FastifyInstance => {
+    const servidor = fastify({ logger: true });
+    configurarConexionBD(servidor);
+    return servidor;
+}
 
-// Iniciar el servidor
-const startServer = async () => {
-    try {
-        await server.listen({ 
-            port: configuration.httpPuerto,
-            host: '0.0.0.0'
-        });
-        console.log(`⚡🚀Servidor iniciado en puerto ${configuration.httpPuerto}⚡🚀`);
-    } catch (err) {
-        server.log.error(err);
-        process.exit(1);
-    }
-};
+// Creamos una nueva función para configurar todas las rutas e inyectar dependencias.
+export const configurarRutas = (servidor: FastifyInstance, repositorioProyectos: IRepositorioProyecto) => {
+    // Inicialización de Casos de Uso con el repositorio inyectado
+    const crearProyecto = new CrearProyecto(repositorioProyectos);
+    const listarProyectos = new ListarProyectos(repositorioProyectos);
+    const obtenerProyectoPorId = new ObtenerProyectoPorId(repositorioProyectos);
+    const actualizarProyecto = new ActualizarProyecto(repositorioProyectos);
+    const eliminarProyecto = new EliminarProyecto(repositorioProyectos);
 
-startServer();
+    // Registro de rutas, inyectando los casos de uso
+    servidor.register(proyectoRutas(
+        crearProyecto, 
+        listarProyectos, 
+        obtenerProyectoPorId,
+        actualizarProyecto,
+        eliminarProyecto
+    ), { prefix: '/api/proyectos' });
+}
