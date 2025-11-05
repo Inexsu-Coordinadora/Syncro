@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node ./dist/index.js",
+    "dev": "tsnd --respawn --clear src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -26,5 +26,13 @@
     "@types/uuid": "^10.0.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inexsu-Coordinadora/Syncro.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Inexsu-Coordinadora/Syncro/issues"
+  },
+  "homepage": "https://github.com/Inexsu-Coordinadora/Syncro#readme"
 }
