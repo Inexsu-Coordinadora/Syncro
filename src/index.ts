@@ -1,32 +1,18 @@
 import { crearServidorBase } from './interfaces/servidor';
 import { RepositorioProyectoPostgres } from './infraestructura/repositorios/repositorioProyectoPostgres';
 import { proyectoRutas } from './interfaces/rutas/proyectoRutas';
+import { clienteRutas } from './interfaces/rutas/clienteRutas';
 import { CrearProyecto } from './aplicacion/casosUso/CrearProyecto';
 import { ListarProyectos } from './aplicacion/casosUso/ListarProyectos';
 import { ObtenerProyectoPorId } from './aplicacion/casosUso/ObtenerProyectoPorId';
 import { ActualizarProyecto } from './aplicacion/casosUso/ActualizarProyecto';
 import { EliminarProyecto } from './aplicacion/casosUso/EliminarProyecto';
-import * as dotenv from 'dotenv';
+import { configuration } from './configuracion/config';
 
-
-dotenv.config();
-
-export const configuration = {
-    httpPuerto: Number(process.env.PUERTO),
-    baseDatos: {
-        host: process.env.PGHOST,
-        puerto: Number(process.env.PGPORT),
-        usuario: process.env.PGUSER,
-        clave: process.env.PGPASSWORD,
-        dbNombre: process.env.PGDATABASE,
-    },
-  }
-
-
-const PUERTO = process.env.PUERTO || 3000;
+const PUERTO = configuration.httpPuerto || 3000;
 const start = async () => {
   try {
-    const servidor = crearServidorBase();
+  const servidor = await crearServidorBase();
     const repositorioProyectos = new RepositorioProyectoPostgres(servidor);
     const crear = new CrearProyecto(repositorioProyectos);
     const consultarTodos = new ListarProyectos(repositorioProyectos);
@@ -35,13 +21,16 @@ const start = async () => {
     const eliminar = new EliminarProyecto(repositorioProyectos);
 
 
-    servidor.register(proyectoRutas(
+  await servidor.register(proyectoRutas(
         crear, 
         consultarTodos, 
         consultarPorId,
         actualizar,
         eliminar
     ), { prefix: '/api/proyectos' });
+
+  // Registrar rutas de clientes (exponer /clientes)
+  await servidor.register(clienteRutas, { prefix: '/clientes' });
 
 
 
