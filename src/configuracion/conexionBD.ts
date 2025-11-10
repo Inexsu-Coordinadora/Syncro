@@ -19,7 +19,7 @@ export const configurarConexionBD = async (servidor: FastifyInstance) => {
       client.release();
     }
   } catch (error) {
-    console.error("❌ Error al configurar la base de datos:", error);
+    console.error("Error al configurar la base de datos:", error);
     throw error;
   }
 };

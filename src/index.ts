@@ -11,8 +11,11 @@ import { configuration } from './configuracion/config';
 
 const PUERTO = configuration.httpPuerto || 3000;
 const start = async () => {
+  let servidor;
   try {
-  const servidor = await crearServidorBase();
+    servidor = await crearServidorBase();
+    
+    console.log('Configurando repositorios y casos de uso...');
     const repositorioProyectos = new RepositorioProyectoPostgres(servidor);
     const crear = new CrearProyecto(repositorioProyectos);
     const consultarTodos = new ListarProyectos(repositorioProyectos);
@@ -34,12 +37,36 @@ const start = async () => {
 
 
 
-    await servidor.listen({ port: Number(PUERTO) });
-    console.log(`Servidor de Proyectos iniciado en http://localhost:${PUERTO}`);
+    console.log('Iniciando servidor en puerto ' + PUERTO);
+    await servidor.listen({ port: Number(PUERTO), host: '0.0.0.0' });
+    console.log(`✅ Servidor iniciado en http://localhost:${PUERTO}`);
+    console.log(`Health check disponible en http://localhost:${PUERTO}/health`);
 
   } catch (err: any) {
-    console.error(`[ERROR] Fallo al iniciar el servidor: ${err.message}`);
+    console.error(`❌ Error al iniciar el servidor: ${err.message}`);
     process.exit(1);
   }
+
+  // Manejo de señales de terminación
+  const signals = ['SIGTERM', 'SIGINT'];
+  
+  for (const signal of signals) {
+    process.on(signal, async () => {
+      console.log(`\nRecibida señal ${signal}, cerrando servidor...`);
+      try {
+        if (servidor) {
+          await servidor.close();
+          console.log('✅ Servidor cerrado correctamente');
+        }
+        process.exit(0);
+      } catch (err: any) {
+        console.error('❌ Error al cerrar el servidor:', err?.message || err);
+        process.exit(1);
+      }
+    });
+  }
 };
+
+// Iniciar servidor
+console.log('Iniciando aplicación...');
 start();
