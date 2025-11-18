@@ -2,11 +2,11 @@ import { crearServidorBase } from './interfaces/servidor';
 import { RepositorioProyectoPostgres } from './infraestructura/repositorios/repositorioProyectoPostgres';
 import { proyectoRutas } from './interfaces/rutas/proyectoRutas';
 import { clienteRutas } from './interfaces/rutas/clienteRutas';
-import { CrearProyecto } from './aplicacion/casosUso/CrearProyecto';
-import { ListarProyectos } from './aplicacion/casosUso/ListarProyectos';
-import { ObtenerProyectoPorId } from './aplicacion/casosUso/ObtenerProyectoPorId';
-import { ActualizarProyecto } from './aplicacion/casosUso/ActualizarProyecto';
-import { EliminarProyecto } from './aplicacion/casosUso/EliminarProyecto';
+import { CrearProyecto } from './aplicacion/casosUso/proyecto/CrearProyecto';
+import { ListarProyectos } from './aplicacion/casosUso/proyecto/ListarProyectos';
+import { ObtenerProyectoPorId } from './aplicacion/casosUso/proyecto/ObtenerProyectoPorId';
+import { ActualizarProyecto } from './aplicacion/casosUso/proyecto/ActualizarProyecto';
+import { EliminarProyecto } from './aplicacion/casosUso/proyecto/EliminarProyecto';
 import { configuration } from './configuracion/config';
 
 const PUERTO = configuration.httpPuerto || 3000;

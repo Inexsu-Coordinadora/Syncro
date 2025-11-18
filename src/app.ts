@@ -1,6 +1,6 @@
 import { ClientePostgres } from "./infraestructura/repositorios/repositorioClientePostgres";
-import { CrearCliente } from "./aplicacion/casosUso/crearCliente";
-import { ListarClientes } from "./aplicacion/casosUso/ListarClientes";
+import { CrearCliente } from "./aplicacion/casosUso/cliente/crearCliente";
+import { ListarClientes } from "./aplicacion/casosUso/cliente/ListarClientes";
 
 const repositorioCliente = new ClientePostgres();
 

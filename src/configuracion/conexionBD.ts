@@ -10,16 +10,15 @@ export const configurarConexionBD = async (servidor: FastifyInstance) => {
       connectionString: connectionString
     });
     
-    // Verificar la conexión
     const client = await servidor.pg.connect();
     try {
       await client.query('SELECT NOW()');
-      console.log("✅ Conexión a base de datos establecida correctamente");
+      console.log("Conexión a base de datos establecida correctamente");
     } finally {
       client.release();
     }
   } catch (error) {
-    console.error("❌ Error al configurar la base de datos:", error);
+    console.error("Error al configurar la base de datos:", error);
     throw error;
   }
 };

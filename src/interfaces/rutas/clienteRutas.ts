@@ -1,10 +1,10 @@
 import { FastifyInstance } from 'fastify';
 import { ClientePostgres } from '../../infraestructura/repositorios/repositorioClientePostgres';
-import { CrearCliente } from '../../aplicacion/casosUso/crearCliente';
-import { ListarClientes } from '../../aplicacion/casosUso/ListarClientes';
-import { ObtenerClientePorId } from '../../aplicacion/casosUso/ObtenerClientePorId';
-import { ActualizarCliente } from '../../aplicacion/casosUso/ActualizarCliente';
-import { EliminarCliente } from '../../aplicacion/casosUso/EliminarCliente';
+import { CrearCliente } from '../../aplicacion/casosUso/cliente/crearCliente';
+import { ListarClientes } from '../../aplicacion/casosUso/cliente/ListarClientes';
+import { ObtenerClientePorId } from '../../aplicacion/casosUso/cliente/ObtenerClientePorId';
+import { ActualizarCliente } from '../../aplicacion/casosUso/cliente/ActualizarCliente';
+import { EliminarCliente } from '../../aplicacion/casosUso/cliente/EliminarCliente';
 import { NotFoundError } from '../../aplicacion/errors/NotFoundError';
 
 export async function clienteRutas(fastify: FastifyInstance) {
