@@ -1,5 +1,5 @@
-import { IProyecto } from '../../dominio/entidades/IProyecto';
-import { IRepositorioProyecto } from '../../dominio/repositorio/IRepositorioProyecto';
+import { IProyecto } from '../../../dominio/entidades/IProyecto';
+import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
 
 // Caso de uso para actualizar un proyecto existente
 export class ActualizarProyecto {
