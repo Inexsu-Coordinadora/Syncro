@@ -1,4 +1,3 @@
-//Interface
 export interface IProyecto {
     idProyecto? : string;
     nombreProyecto: string;

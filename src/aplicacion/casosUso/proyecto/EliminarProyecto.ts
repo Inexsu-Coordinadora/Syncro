@@ -1,4 +1,4 @@
-import { IRepositorioProyecto } from '../../dominio/repositorio/IRepositorioProyecto';
+import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
 
 // Caso de uso para eliminar un proyecto por su ID
 export class EliminarProyecto {
