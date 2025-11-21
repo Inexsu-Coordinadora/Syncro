@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { configuration } from "..";
 import { configuration } from "../configuracion/configuracion";
 
 
