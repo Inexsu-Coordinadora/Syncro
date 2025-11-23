@@ -1,5 +1,5 @@
 export interface IProyecto {
-    idProyecto? : string;
+    idProyecto? : string | undefined;
     nombreProyecto: string;
     descripcionProyecto: string;
     clienteId : string;

@@ -5,6 +5,8 @@ import { ObtenerProyectoPorId } from '../../aplicacion/casosUso/proyecto/Obtener
 import { ActualizarProyecto } from '../../aplicacion/casosUso/proyecto/ActualizarProyecto';
 import { EliminarProyecto } from '../../aplicacion/casosUso/proyecto/EliminarProyecto';
 import { IProyecto } from '../../dominio/entidades/IProyecto';
+import { NotFoundError } from '../../aplicacion/errors/NotFoundError';
+import { HttpStatus } from '../../common/statusCode';
 
 // Definición de las rutas para la entidad Proyecto
 export function proyectoRutas(
@@ -22,39 +24,44 @@ export function proyectoRutas(
 
     servidor.get('/:idProyecto', async (peticion: FastifyRequest<{ Params: { idProyecto: string } }>, respuesta: FastifyReply) => {
         const proyecto = await consultarPorId.ejecutar(peticion.params.idProyecto);
-        if (!proyecto) return respuesta.status(404).send({ mensaje: 'Proyecto no encontrado' });
+        if (!proyecto) return respuesta.status(HttpStatus.NO_ENCONTRADO).send({ mensaje: 'Proyecto no encontrado' });
         return proyecto;
     });
 
     servidor.post('/', async (peticion: FastifyRequest<{ Body: IProyecto }>, respuesta: FastifyReply) => {
+        if (peticion.body.fecha_inicio) peticion.body.fecha_inicio = new Date(peticion.body.fecha_inicio);
+        if (peticion.body.fecha_fin) peticion.body.fecha_fin = new Date(peticion.body.fecha_fin);
         try {
-        
             const nuevoProyecto = await crear.ejecutar(peticion.body);
-            return respuesta.status(201).send(nuevoProyecto);
+            return respuesta.status(HttpStatus.CREADO).send(nuevoProyecto);
         } catch (error: any) {
-            respuesta.status(400).send({ mensaje: error.message });
+            respuesta.status(HttpStatus.SOLICITUD_INCORRECTA).send({ mensaje: error.message });
         }
     });
 
     servidor.put('/:idProyecto', async (peticion: FastifyRequest<{ Params: { idProyecto: string }, Body: IProyecto }>, respuesta: FastifyReply) => {
+    if (peticion.body.fecha_inicio) peticion.body.fecha_inicio = new Date(peticion.body.fecha_inicio);
+    if (peticion.body.fecha_fin) peticion.body.fecha_fin = new Date(peticion.body.fecha_fin);
         try {
             const proyectoActualizado = await actualizar.ejecutar(peticion.params.idProyecto, peticion.body);
-            if (!proyectoActualizado) return respuesta.status(404).send({ mensaje: 'Proyecto no encontrado' });
+            if (!proyectoActualizado) return respuesta.status(HttpStatus.NO_ENCONTRADO).send({ mensaje: 'Proyecto no encontrado' });
             return proyectoActualizado;
         } catch (error: any) {
-            respuesta.status(400).send({ mensaje: error.message });
+            respuesta.status(HttpStatus.SOLICITUD_INCORRECTA).send({ mensaje: error.message });
         }
     });
 
-    servidor.delete('/:idProyecto', async (peticion: FastifyRequest<{ Params: { idProyecto: string } }>, respuesta: FastifyReply) => {
-        try {
-            const mensaje = await eliminar.ejecutar(peticion.params.idProyecto);
-            return { mensaje };
-        } catch (error: any) {
-             if (error.message.includes('no encontrado')) return respuesta.status(404).send({ mensaje: error.message });
-             respuesta.status(500).send({ mensaje: error.message });
-        }
-    });
+servidor.delete('/:idProyecto', async (peticion: FastifyRequest<{ Params: { idProyecto: string } }>, respuesta: FastifyReply) => {
+    try {
+        const mensaje = await eliminar.ejecutar(peticion.params.idProyecto);
+        return respuesta.status(HttpStatus.EXITO).send ({ mensaje });
+    } catch (error: any) {
+         if (error instanceof NotFoundError) {
+            return respuesta.status(HttpStatus.NO_ENCONTRADO).send({ message: error.message, statusCode: HttpStatus.NO_ENCONTRADO });
+         }
+         respuesta.status(HttpStatus.ERROR_SERVIDOR).send({ mensaje: 'Error interno del servidor', detalle: error.message });
+    }
+});
 
   };
 }
