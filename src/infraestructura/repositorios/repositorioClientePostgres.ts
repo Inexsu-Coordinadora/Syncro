@@ -1,6 +1,7 @@
 import { ICliente } from "../../dominio/entidades/ICliente";
 import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
 import { ejecutarConsulta } from "../../infraestructura/cliente-db";
+import { ProyectoResumen } from "../../interfaces/rutas/proyectoResumen"; 
 import { v4 as uuidv4 } from "uuid";
 
 export class ClientePostgres implements IRepositorioCliente {
@@ -58,5 +59,19 @@ export class ClientePostgres implements IRepositorioCliente {
             [id]
         );
         return resultado.rows[0] || null;
+    }
+
+    async consultarProyectosPorCliente(clienteId: string): Promise<ProyectoResumen[]> {
+        const resultado = await ejecutarConsulta(
+            `SELECT p.codigo AS codigo, p.nombre AS nombre, p.estado AS estado, p.fecha_inicio AS "fechaInicio", p.fecha_fin AS "fechaFin",
+            json_agg(json_build_object('nombre', c.nombre_consultor, 'rol', pc.rol)) AS "consultoresAsignados"
+            FROM proyectos p
+            LEFT JOIN proyecto_consultores pc ON p.codigo = pc.codigo_proyecto
+            LEFT JOIN consultores c ON pc.id_consultor = c.id_consultor
+            WHERE p.id_cliente = $1
+            GROUP BY p.codigo`,
+            [clienteId]
+        );
+        return resultado.rows;
     }
 }

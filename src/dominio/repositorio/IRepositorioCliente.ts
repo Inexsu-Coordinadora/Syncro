@@ -1,4 +1,5 @@
 import { ICliente } from "../entidades/ICliente";
+import { ProyectoResumen } from '../../interfaces/rutas/proyectoResumen'; 
 
 export interface IRepositorioCliente {
     crearCliente(datosCliente: ICliente): Promise<ICliente>;
@@ -8,4 +9,6 @@ export interface IRepositorioCliente {
         datosCliente: ICliente
     ): Promise<ICliente | null>;
     eliminarCliente(id: string): Promise<string>;
+
+    consultarProyectosPorCliente(clienteId: string): Promise<ProyectoResumen[]>;
 }
