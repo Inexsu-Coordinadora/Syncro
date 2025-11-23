@@ -1,0 +1,30 @@
+meta {
+  name: actualizarProyectos
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:3000/api/proyectos/3
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "idProyecto": 3,
+    "nombreProyecto": "Desarrollo Backend 1",
+    "descripcionProyecto": "Creación de un sistema ERP modular a medida para la gestión interna de recursos.",
+    "clienteId": "CLI_ERP_INT",
+    "fecha_inicio": "2025-08-01T05:00:00.000Z",
+    "fecha_fin": "2026-06-01T05:00:00.000Z",
+    "estadoProyecto": "Planificado",
+    "consultor_asignado": "Carlos Rodriguez",
+    "roles_definidos": "Líder Técnico, Desarrollador Backend, QA Tester, DBA"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
