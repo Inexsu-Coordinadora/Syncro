@@ -1,6 +1,6 @@
-import { ICliente } from "../../dominio/entidades/ICliente";
-import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
-import { NotFoundError } from "../errors/NotFoundError";
+import { ICliente } from "../../../dominio/entidades/ICliente";
+import { IRepositorioCliente } from "../../../dominio/repositorio/IRepositorioCliente";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 export class ActualizarCliente {
     private repositorioCliente: IRepositorioCliente;
@@ -14,7 +14,7 @@ export class ActualizarCliente {
             throw new Error("El ID del cliente es obligatorio para la actualización.");
         }
 
-        if (!datosCliente.nombreCliente || !datosCliente.direccionCliente || !datosCliente.emailCliente) {
+        if (!datosCliente.nombre_cliente || !datosCliente.direccion_cliente || !datosCliente.email_cliente) {
             throw new Error("Los campos nombreCliente, direccionCliente y emailCliente son obligatorios.");
         }
 

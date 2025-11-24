@@ -1,86 +1,71 @@
-import { FastifyInstance } from 'fastify';
-import { ClientePostgres } from '../../infraestructura/repositorios/repositorioClientePostgres';
-import { CrearCliente } from '../../aplicacion/casosUso/crearCliente';
-import { ListarClientes } from '../../aplicacion/casosUso/ListarClientes';
-import { ObtenerClientePorId } from '../../aplicacion/casosUso/ObtenerClientePorId';
-import { ActualizarCliente } from '../../aplicacion/casosUso/ActualizarCliente';
-import { EliminarCliente } from '../../aplicacion/casosUso/EliminarCliente';
-import { NotFoundError } from '../../aplicacion/errors/NotFoundError';
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { ClienteEsquema } from "../validaciones/clienteEsquema";
+import { CrearCliente } from "../../aplicacion/casosUso/cliente/crearCliente";
+import { ListarClientes } from "../../aplicacion/casosUso/cliente/ListarClientes";
+import { ObtenerClientePorId } from "../../aplicacion/casosUso/cliente/ObtenerClientePorId";
+import { ActualizarCliente } from "../../aplicacion/casosUso/cliente/ActualizarCliente";
+import { EliminarCliente } from "../../aplicacion/casosUso/cliente/EliminarCliente";
+import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
+import { ICliente } from "../../dominio/entidades/ICliente";
 
-export async function clienteRutas(fastify: FastifyInstance) {
-    const repositorioCliente = new ClientePostgres();
-    
-    // Casos de uso
-    const crearClienteUC = new CrearCliente(repositorioCliente);
-    const listarClientesUC = new ListarClientes(repositorioCliente);
-    const obtenerClientePorIdUC = new ObtenerClientePorId(repositorioCliente);
-    const actualizarClienteUC = new ActualizarCliente(repositorioCliente);
-    const eliminarClienteUC = new EliminarCliente(repositorioCliente);
+export async function clienteRutas(
+    servidor: FastifyInstance,
+    repositorio: IRepositorioCliente
+) {
+    const listarClientes = new ListarClientes(repositorio);
+    const obtenerClientePorId = new ObtenerClientePorId(repositorio);
+    const crearCliente = new CrearCliente(repositorio);
+    const actualizarCliente = new ActualizarCliente(repositorio);
+    const eliminarCliente = new EliminarCliente(repositorio);
 
-    // Crear cliente
-    fastify.post('/', async (request, reply) => {
-        try {
-            const cliente = await crearClienteUC.ejecutar(request.body as any);
-            return reply.code(201).send(cliente);
-        } catch (error: any) {
-            request.log.error(error);
-            return reply.code(400).send({ error: error.message });
-        }
+    // LISTAR TODOS
+    servidor.get("/", async () => {
+        return await listarClientes.ejecutar();
     });
 
-    // Listar todos los clientes
-    fastify.get('/', async (request, reply) => {
-        try {
-            const clientes = await listarClientesUC.ejecutar();
-            return reply.send(clientes);
-        } catch (error) {
-            request.log.error(error);
-            return reply.code(500).send({ error: 'Error interno del servidor' });
-        }
+    // OBTENER POR ID
+    servidor.get("/:id", async (
+        req: FastifyRequest<{ Params: { id: string } }>,
+        res: FastifyReply
+    ) => {
+        const cliente = await obtenerClientePorId.ejecutar(req.params.id);
+        if (!cliente) return res.status(404).send({ mensaje: "No encontrado" });
+        return cliente;
     });
 
-    // Obtener cliente por ID
-    fastify.get('/:id', async (request, reply) => {
-        try {
-            const cliente = await obtenerClientePorIdUC.ejecutar((request.params as any).id);
-            return reply.send(cliente);
-        } catch (error) {
-            request.log.error(error);
-            if (error instanceof NotFoundError) {
-                return reply.code(404).send({ error: error.message });
-            }
-            return reply.code(500).send({ error: 'Error interno del servidor' });
-        }
+    // CREAR
+    servidor.post("/", async (
+        req: FastifyRequest<{ Body: ICliente }>,
+        res: FastifyReply
+    ) => {
+        const parse = ClienteEsquema.safeParse(req.body);
+        if (!parse.success) return res.status(400).send(parse.error);
+
+        return await crearCliente.ejecutar(parse.data);
     });
 
-    // Actualizar cliente
-    fastify.put('/:id', async (request, reply) => {
-        try {
-            const cliente = await actualizarClienteUC.ejecutar(
-                (request.params as any).id,
-                request.body as any
-            );
-            return reply.send(cliente);
-        } catch (error: any) {
-            request.log.error(error);
-            if (error instanceof NotFoundError) {
-                return reply.code(404).send({ error: error.message });
-            }
-            return reply.code(400).send({ error: error.message });
-        }
+    // ACTUALIZAR
+    servidor.put("/:id", async (
+        req: FastifyRequest<{ Params: { id: string }; Body: ICliente }>,
+        res: FastifyReply
+    ) => {
+        const parse = ClienteEsquema.safeParse(req.body);
+        if (!parse.success) return res.status(400).send(parse.error);
+
+        const actualizado = await actualizarCliente.ejecutar(req.params.id, parse.data);
+        if (!actualizado) return res.status(404).send({ mensaje: "No encontrado" });
+        return actualizado;
     });
 
-    // Eliminar cliente
-    fastify.delete('/:id', async (request, reply) => {
+    // ELIMINAR
+    servidor.delete("/:id", async (
+        req: FastifyRequest<{ Params: { id: string } }>,
+        res: FastifyReply
+    ) => {
         try {
-            const mensaje = await eliminarClienteUC.ejecutar((request.params as any).id);
-            return reply.send({ message: mensaje });
-        } catch (error) {
-            request.log.error(error);
-            if (error instanceof NotFoundError) {
-                return reply.code(404).send({ error: error.message });
-            }
-            return reply.code(500).send({ error: 'Error interno del servidor' });
+            return await eliminarCliente.ejecutar(req.params.id);
+        } catch {
+            return res.status(404).send({ mensaje: "No encontrado" });
         }
     });
 }
