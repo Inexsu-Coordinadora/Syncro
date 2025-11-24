@@ -1,6 +1,6 @@
 import Fastify from 'fastify';
-import dotenv from 'dotenv';
 import consultorRutas from './interfaces/consultor/rutas/consultorRutas'; 
+import * as dotenv from 'dotenv';
 
 
 dotenv.config();
@@ -22,7 +22,7 @@ const app = Fastify({
 app.register(consultorRutas, { prefix: '/api' }); 
 
 
-async function start() {
+async function startServer() {
     try {
         
         await app.listen({ port: configuration.httpPuerto, host: '0.0.0.0' }); 
@@ -48,7 +48,6 @@ import { asignacionRutas } from './interfaces/rutas/asignacionRutas';
 import { AsignarConsultorProyecto } from './aplicacion/casosUso/proyecto/AsignarConsultorProyecto';
 // ----------------------------------------
 
-import * as dotenv from 'dotenv';
 
 dotenv.config();
 const PUERTO = process.env.PUERTO || 3000;
@@ -97,3 +96,4 @@ const start = async () => {
 };
 
 start();
+startServer();

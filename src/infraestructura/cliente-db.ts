@@ -1,14 +1,13 @@
 import { Pool } from "pg";
-import { configuration } from "..";
-import { configuration } from "../configuracion/configuracion";
+import { configuration } from "../common/configuration";
 
 
 const pool = new Pool({
     host: configuration.baseDatos.host,
     user: configuration.baseDatos.usuario,
-    database: configuration.baseDatos.dbNombre,
+    database: configuration.baseDatos.nombreDb,
     port: configuration.baseDatos.puerto,
-    password: configuration.baseDatos.clave, 
+    password: configuration.baseDatos.contrasena, 
 });
 
 export async function ejecutarConsulta(
