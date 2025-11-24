@@ -4,9 +4,11 @@ import { ListarProyectos } from "../../aplicacion/casosUso/proyecto/ListarProyec
 import { ObtenerProyectoPorId } from "../../aplicacion/casosUso/proyecto/ObtenerProyectoPorId";
 import { ActualizarProyecto } from "../../aplicacion/casosUso/proyecto/ActualizarProyecto";
 import { EliminarProyecto } from "../../aplicacion/casosUso/proyecto/EliminarProyecto";
+import { ProyectoEsquema, ProyectoInput, ProyectoParsed } from "../validaciones/proyectoEsquema";
 import { IProyecto } from "../../dominio/entidades/IProyecto";
+import { mapearError } from "../util/mapearErrores";
+import { NotFoundError } from "../../aplicacion/errors/NotFoundError";
 
-// Definición de las rutas para la entidad Proyecto
 export function proyectoRutas(
     crear: CrearProyecto,
     consultarTodos: ListarProyectos,
@@ -15,82 +17,63 @@ export function proyectoRutas(
     eliminar: EliminarProyecto
 ) {
     return async function (servidor: FastifyInstance) {
-        servidor.get("/", async () => {
-            return consultarTodos.ejecutar();
+        servidor.get("/", async () => consultarTodos.ejecutar());
+
+        servidor.get("/:idProyecto", async (
+            req: FastifyRequest<{ Params: { idProyecto: string } }>,
+            res: FastifyReply
+        ) => {
+            try {
+                const proyecto = await consultarPorId.ejecutar(req.params.idProyecto);
+                if (!proyecto) throw new NotFoundError("Proyecto no encontrado");
+                return proyecto;
+            } catch (e) {
+                return mapearError(res, e);
+            }
         });
 
-        servidor.get(
-            "/:idProyecto",
-            async (
-                peticion: FastifyRequest<{ Params: { idProyecto: string } }>,
-                respuesta: FastifyReply
-            ) => {
-                const proyecto = await consultarPorId.ejecutar(
-                    peticion.params.idProyecto
-                );
-                if (!proyecto)
-                    return respuesta
-                        .status(404)
-                        .send({ mensaje: "Proyecto no encontrado" });
-                return proyecto;
-            }
-        );
+        servidor.post("/", async (
+            req: FastifyRequest<{ Body: ProyectoInput }>,
+            res: FastifyReply
+        ) => {
+            const parse = ProyectoEsquema.safeParse(req.body);
+            if (!parse.success) return res.status(400).send(parse.error);
 
-        servidor.post(
-            "/",
-            async (
-                peticion: FastifyRequest<{ Body: IProyecto }>,
-                respuesta: FastifyReply
-            ) => {
-                try {
-                    const nuevoProyecto = await crear.ejecutar(peticion.body);
-                    return respuesta.status(201).send(nuevoProyecto);
-                } catch (error: any) {
-                    respuesta.status(400).send({ mensaje: error.message });
-                }
+            try {
+                const nuevo = await crear.ejecutar(parse.data as IProyecto);
+                return res.status(201).send(nuevo);
+            } catch (e) {
+                return mapearError(res, e);
             }
-        );
+        });
 
-        servidor.put(
-            "/:idProyecto",
-            async (
-                peticion: FastifyRequest<{
-                    Params: { idProyecto: string };
-                    Body: IProyecto;
-                }>,
-                respuesta: FastifyReply
-            ) => {
-                try {
-                    const proyectoActualizado = await actualizar.ejecutar(
-                        peticion.params.idProyecto,
-                        peticion.body
-                    );
-                    if (!proyectoActualizado)
-                        return respuesta
-                            .status(404)
-                            .send({ mensaje: "Proyecto no encontrado" });
-                    return proyectoActualizado;
-                } catch (error: any) {
-                    respuesta.status(400).send({ mensaje: error.message });
-                }
-            }
-        );
+        servidor.put("/:idProyecto", async (
+            req: FastifyRequest<{ Params: { idProyecto: string }; Body: ProyectoInput }>,
+            res: FastifyReply
+        ) => {
+            const parse = ProyectoEsquema.safeParse(req.body);
+            if (!parse.success) return res.status(400).send(parse.error);
 
-        servidor.delete(
-            "/:idProyecto",
-            async (
-                peticion: FastifyRequest<{ Params: { idProyecto: string } }>,
-                respuesta: FastifyReply
-            ) => {
-                try {
-                    const mensaje = await eliminar.ejecutar(peticion.params.idProyecto);
-                    return { mensaje };
-                } catch (error: any) {
-                    if (error.message.includes("no encontrado"))
-                        return respuesta.status(404).send({ mensaje: error.message });
-                    respuesta.status(500).send({ mensaje: error.message });
-                }
+            try {
+                const actualizado = await actualizar.ejecutar(req.params.idProyecto, parse.data as IProyecto);
+                if (!actualizado) throw new NotFoundError("Proyecto no encontrado");
+                return actualizado;
+            } catch (e) {
+                return mapearError(res, e);
             }
-        );
+        });
+
+        servidor.delete("/:idProyecto", async (
+            req: FastifyRequest<{ Params: { idProyecto: string } }>,
+            res: FastifyReply
+        ) => {
+            try {
+                const ok = await eliminar.ejecutar(req.params.idProyecto);
+                if (!ok) throw new NotFoundError("Proyecto no encontrado");
+                return { mensaje: "Eliminado" };
+            } catch (e) {
+                return mapearError(res, e);
+            }
+        });
     };
 }
