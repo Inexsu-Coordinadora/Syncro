@@ -1,4 +1,4 @@
-import { IProyecto } from "../entidades/proyecto/IProyecto";
+import { IProyecto } from "../entidades/IProyecto";
 export interface IRepositorioProyecto {
     
     crearProyecto(datosProyecto: IProyecto): Promise<IProyecto>;

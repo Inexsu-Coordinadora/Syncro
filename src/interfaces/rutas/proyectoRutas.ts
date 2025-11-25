@@ -1,12 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { CrearProyecto } from '../../../aplicacion/casosUso/proyecto/CrearProyecto';
-import { ListarProyectos } from '../../../aplicacion/casosUso/proyecto/ListarProyectos';
-import { ObtenerProyectoPorId } from '../../../aplicacion/casosUso/proyecto/ObtenerProyectoPorId';
-import { ActualizarProyecto } from '../../../aplicacion/casosUso/proyecto/ActualizarProyecto';
-import { EliminarProyecto } from '../../../aplicacion/casosUso/proyecto/EliminarProyecto';
-import { IProyecto } from '../../../dominio/entidades/proyecto/IProyecto';
-import { NotFoundError } from '../../../aplicacion/errors/NotFoundError';
-import { HttpStatus } from '../../../common/statusCode';
+import { CrearProyecto } from '../../aplicacion/casosUso/proyecto/CrearProyecto';
+import { ListarProyectos } from '../../aplicacion/casosUso/proyecto/ListarProyectos';
+import { ObtenerProyectoPorId } from '../../aplicacion/casosUso/proyecto/ObtenerProyectoPorId';
+import { ActualizarProyecto } from '../../aplicacion/casosUso/proyecto/ActualizarProyecto';
+import { EliminarProyecto } from '../../aplicacion/casosUso/proyecto/EliminarProyecto';
+import { IProyecto } from '../../dominio/entidades/IProyecto';
+import { NotFoundError } from '../../aplicacion/errors/NotFoundError';
+import { HttpStatus } from '../../common/statusCode';
 
 // Definición de las rutas para la entidad Proyecto
 export function proyectoRutas(

@@ -1,4 +1,4 @@
-import { IAsignacion } from '../../entidades/asignar_consultor/IAsignacion';
+import { IAsignacion } from '../entidades/IAsignacion';
 
 export interface IRepositorioAsignacion {
 

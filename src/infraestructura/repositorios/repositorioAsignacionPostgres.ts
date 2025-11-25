@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
-import { IAsignacion } from '../../../dominio/entidades/asignar_consultor/IAsignacion';
-import { IRepositorioAsignacion } from '../../../dominio/repositorio/asignar_consultor/IRepositorioAsignacion';
+import { IAsignacion } from '../../dominio/entidades/IAsignacion';
+import { IRepositorioAsignacion } from '../../dominio/repositorio/IRepositorioAsignacion';
 import { any } from 'zod';  
 
 export class RepositorioAsignacionPG implements IRepositorioAsignacion {
