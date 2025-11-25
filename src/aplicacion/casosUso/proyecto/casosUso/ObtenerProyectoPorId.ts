@@ -1,6 +1,6 @@
-import { IProyecto } from '../../../dominio/entidades/IProyecto';
-import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
-import { NotFoundError } from '../../errors/NotFoundError';
+import { IProyecto } from '../../../../dominio/entidades/IProyecto';
+import { IRepositorioProyecto } from '../../../../dominio/repositorio/IRepositorioProyecto';
+import { NotFoundError } from '../../../errors/NotFoundError';
 
 //  Caso de uso para obtener un proyecto por su ID
 export class ObtenerProyectoPorId {

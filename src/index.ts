@@ -1,24 +1,27 @@
 import { crearServidorBase } from './interfaces/servidor';
-import { RepositorioProyectoPostgres } from './infraestructura/repositorios/proyecto/repositorioProyectoPostgres';
-//import { RepositorioConsultorPG } from './infraestructura/repositorios/repositorioConsultorPostgres'; 
-import { proyectoRutas } from './interfaces/rutas/proyecto/proyectoRutas';
+import { RepositorioProyectoPostgres } from './infraestructura/repositorios/repositorioProyectoPostgres';
+import { RepositorioConsultorPostgres } from './infraestructura/repositorios/repositorioConsultorPostgres'; // Importado y renombrado a Postgres (verifica tu nombre de archivo real)
+import { proyectoRutas } from './interfaces/rutas/proyectoRutas';
 import { CrearProyecto } from './aplicacion/casosUso/proyecto/CrearProyecto';
 import { ListarProyectos } from './aplicacion/casosUso/proyecto/ListarProyectos';
 import { ObtenerProyectoPorId } from './aplicacion/casosUso/proyecto/ObtenerProyectoPorId';
 import { ActualizarProyecto } from './aplicacion/casosUso/proyecto/ActualizarProyecto';
 import { EliminarProyecto } from './aplicacion/casosUso/proyecto/EliminarProyecto';
-import { RepositorioAsignacionPG } from './infraestructura/repositorios/asignar_consultor/repositorioAsignacionPostgres';
-import { asignacionRutas } from './interfaces/rutas/asignar_consultor/asignacionRutas';
+import { RepositorioAsignacionPG } from './infraestructura/repositorios/repositorioAsignacionPostgres';
+import { asignacionRutas } from './interfaces/rutas/asignacionRutas';
 import { AsignarConsultorProyecto } from './aplicacion/casosUso/asignar_consultor/AsignarConsultorProyecto';
 import * as dotenv from 'dotenv';
+import { configuration } from './common/configuration'; 
+
 
 dotenv.config();
 const PUERTO = process.env.PUERTO || 3000;
+
 const start = async () => {
   try {
     const servidor = crearServidorBase();
     const repositorioProyectos = new RepositorioProyectoPostgres(servidor);
-    //const repositorioConsultores = new RepositorioConsultor(servidor); 
+    const repositorioConsultores = new RepositorioConsultorPostgres(servidor); 
     const repositorioAsignaciones = new RepositorioAsignacionPG(servidor); 
     const crear = new CrearProyecto(repositorioProyectos);
     const consultarTodos = new ListarProyectos(repositorioProyectos);
@@ -26,12 +29,13 @@ const start = async () => {
     const actualizar = new ActualizarProyecto(repositorioProyectos);
     const eliminar = new EliminarProyecto(repositorioProyectos); 
 
-    // --- INSTANCIAR NUEVO CASO DE USO DE ASIGNACIONES ---
+
     const asignarConsultor = new AsignarConsultorProyecto(
         repositorioAsignaciones, 
         repositorioProyectos, 
-        //repositorioConsultores
+        repositorioConsultores // Descomentado y usado
     );
+
     // Registrar rutas de Proyectos 
     servidor.register(proyectoRutas(
         crear, 
@@ -41,9 +45,8 @@ const start = async () => {
         eliminar
     ), { prefix: '/api/proyectos' });
 
+    // Registrar rutas de Asignaciones
     servidor.register(asignacionRutas(asignarConsultor), { prefix: '/api/asignaciones' });
-    // ---------------------------------------------
-
 
     await servidor.listen({ port: Number(PUERTO) });
     console.log(`Servidor de Proyectos iniciado en http://localhost:${PUERTO}`);
