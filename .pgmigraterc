@@ -1,6 +1,6 @@
 {
-    "dir": "migrations",
-    "migrationsTable": "pgmigrations",
+    "dir": "migrations", 
+  "migrationsTable": "pgmigrations",
     "databaseUrl": {
         "user": "${PGUSER}",
         "password": "${PGPASSWORD}",

@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { IConsultor } from "../../../dominio/consultor/entidades/IConsultor"; 
-import { IRepositorioConsultor } from "../../../dominio/consultor/repositorio/IRepositorioConsultor";
+import { IConsultor } from "../../../dominio/entidades/IConsultor"; 
+import { IRepositorioConsultor } from "../../../dominio/repositorio/IRepositorioConsultor";
 
 export class CrearConsultor {
   constructor(private repo: IRepositorioConsultor) {}

@@ -6,12 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "migrate": "node-pg-migrate up --dir ./migraciones/consultor",
+    "migrate": "node-pg-migrate up",
     "build": "tsc",
     "start": "node dist/server.js"
-    
-    "start": "node dist/index.js",
-    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +26,6 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1",
     "@types/node": "^24.10.0",
     "@types/pg": "^8.15.6",
     "@types/uuid": "^10.0.0",

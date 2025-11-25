@@ -1,4 +1,4 @@
-import { IConsultor } from "../entidades/IConsultor";
+import { IConsultor } from "../../dominio/entidades/IConsultor"; 
 
 export interface IRepositorioConsultor {
   crear(consultor: IConsultor): Promise<IConsultor>;

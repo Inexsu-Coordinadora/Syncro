@@ -1,4 +1,4 @@
-import { IRepositorioConsultor } from "../../../dominio/consultor/repositorio/IRepositorioConsultor"; 
+import { IRepositorioConsultor } from "../../../dominio/repositorio/IRepositorioConsultor"; 
 
 export class EliminarConsultor {
   constructor(private repo: IRepositorioConsultor) {}

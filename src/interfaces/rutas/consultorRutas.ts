@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
-import { RepositorioConsultorPostgres } from "../../../infraestructura/consultor/repositorios/repositorioConsultorPostgres";
-import { ActualizarConsultor }from "../../../aplicacion/consultor/casosUso/ActualizarConsultor"; 
-import { CrearConsultor } from "../../../aplicacion/consultor/casosUso/CrearConsultor";
-import { EliminarConsultor } from "../../../aplicacion/consultor/casosUso/EliminarConsultor";
-import { ListarConsultor } from "../../../aplicacion/consultor/casosUso/ListarConsultor";
-import { ObtenerConsultorPorId } from "../../../aplicacion/consultor/casosUso/ObtenerConsultorPorId";
+import { RepositorioConsultorPostgres } from "../../infraestructura/repositorios/repositorioConsultorPostgres";
+import { ActualizarConsultor }from "../../aplicacion/casosUso/consultor/ActualizarConsultor"; 
+import { CrearConsultor } from "../../aplicacion/casosUso/consultor/CrearConsultor";
+import { EliminarConsultor } from "../../aplicacion/casosUso/consultor/EliminarConsultor";
+import { ListarConsultor } from "../../aplicacion/casosUso/consultor/ListarConsultor";
+import { ObtenerConsultorPorId } from "../../aplicacion/casosUso/consultor/ObtenerConsultorPorId";
 
 export default async function consultorRutas(app: FastifyInstance) {
   const repo = new RepositorioConsultorPostgres();

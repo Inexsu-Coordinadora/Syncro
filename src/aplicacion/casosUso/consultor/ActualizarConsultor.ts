@@ -1,5 +1,5 @@
-import { IConsultor } from "../../../dominio/consultor/entidades/IConsultor"; 
-import { IRepositorioConsultor } from "../../../dominio/consultor/repositorio/IRepositorioConsultor"; 
+import { IConsultor } from "../../../dominio/entidades/IConsultor"; 
+import { IRepositorioConsultor } from "../../../dominio/repositorio/IRepositorioConsultor"; 
 
 export class ActualizarConsultor {
   constructor(private repo: IRepositorioConsultor) {}
