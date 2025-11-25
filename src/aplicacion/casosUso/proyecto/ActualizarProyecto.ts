@@ -1,6 +1,6 @@
 import { IProyecto } from '../../../dominio/entidades/IProyecto';
 import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
-import { NotFoundError } from '../../errors/NotFoundError'; 
+import { NotFoundError } from '../../errors/NotFoundError';
 
 // Caso de uso para actualizar un proyecto existente
 export class ActualizarProyecto {

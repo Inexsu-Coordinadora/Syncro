@@ -1,6 +1,5 @@
 import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
 import { NotFoundError } from '../../errors/NotFoundError';
-
 // Caso de uso para eliminar un proyecto por su ID
 export class EliminarProyecto {
   constructor(private readonly repo: IRepositorioProyecto) {}
