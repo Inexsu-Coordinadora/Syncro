@@ -1,55 +1,116 @@
-API RUTAS - DOCUMENTACIÓN
+# ============================
+# 1. API Clientes
+# ============================
 
-Clientes API
-============
+# Listar clientes
+GET http://localhost:3000/api/clientes
 
-GET /clientes
-------------
-Descripción: Obtiene la lista de todos los clientes
-Método: GET
-Ruta: /clientes
-Respuesta: Array de clientes
+# Obtener cliente por ID
+GET http://localhost:3000/api/clientes/:idCliente
 
-GET /clientes/:id
-----------------
-Descripción: Obtiene un cliente por su ID
-Método: GET
-Ruta: /clientes/:id
-Parámetros: 
-  - id (parámetro de ruta)
-Respuesta: Cliente individual
-Error: NotFoundError si el cliente no existe
-
-POST /clientes
--------------
-Descripción: Crea un nuevo cliente
-Método: POST
-Ruta: /clientes
-Cuerpo: Datos del cliente
-Respuesta: Cliente creado
-
-DELETE /clientes/:id
--------------------
-Descripción: Elimina un cliente por su ID
-Método: DELETE
-Ruta: /clientes/:id
-Parámetros:
-  - id (parámetro de ruta)
-Respuesta: Sin contenido (204)
-Error: NotFoundError si el cliente no existe
-
-Formato de Cliente
-=================
+# Crear cliente
+POST http://localhost:3000/api/clientes
+Body (JSON):
 {
-  "id": string,
-  "nombre": string,
-  "apellido": string,
-  "email": string,
-  "telefono": string
+  "nombre_cliente": "Empresa ABC",
+  "correo_cliente": "contacto@empresaabc.com",
+  "telefono_cliente": "3001234567",
+  "direccion_cliente": "Calle 123 #45-67, Medellín"
 }
 
-Notas
-=====
-- Todas las rutas devuelven errores 404 cuando el recurso no se encuentra
-- Los errores se devuelven en formato JSON con mensaje descriptivo
-- Las rutas son sensibles a mayúsculas/minúsculas
+# Actualizar cliente
+PUT http://localhost:3000/api/clientes/:idCliente
+Body (JSON):
+{
+  "nombre_cliente": "Empresa ABC S.A.",
+  "correo_cliente": "info@empresaabc.com",
+  "telefono_cliente": "3017654321",
+  "direccion_cliente": "Carrera 45 #67-89, Medellín"
+}
+
+# Eliminar cliente
+DELETE http://localhost:3000/api/clientes/:idCliente
+
+
+# ============================
+# 2. API Proyectos
+# ============================
+
+# Listar proyectos
+GET http://localhost:3000/api/proyectos
+
+# Obtener proyecto por ID
+GET http://localhost:3000/api/proyectos/:idProyecto
+
+# Crear proyecto (requiere id_cliente existente)
+POST http://localhost:3000/api/proyectos
+Body (JSON):
+{
+  "codigo_proyecto": "P-001",
+  "nombre_proyecto": "Sistema de Validación",
+  "descripcion_proyecto": "Proyecto de prueba",
+  "fecha_inicio": "2025-11-24",
+  "fecha_fin": "2025-12-15",
+  "estado_proyecto": "Planificado",
+  "id_cliente": "cc1285d8-0fda-4cd6-841b-cb42eb2afe44",
+  "consultor_asignado": null,
+  "roles_definidos": "Backend, QA"
+}
+
+# Actualizar proyecto
+PUT http://localhost:3000/api/proyectos/:idProyecto
+Body (JSON):
+{
+  "codigo_proyecto": "P-001",
+  "nombre_proyecto": "Sistema de Validación Actualizado",
+  "descripcion_proyecto": "Descripción modificada",
+  "fecha_inicio": "2025-11-24",
+  "fecha_fin": "2025-12-20",
+  "estado_proyecto": "En ejecución",
+  "id_cliente": "cc1285d8-0fda-4cd6-841b-cb42eb2afe44",
+  "consultor_asignado": null,
+  "roles_definidos": "Backend, QA, Frontend"
+}
+
+# Eliminar proyecto
+DELETE http://localhost:3000/api/proyectos/:idProyecto
+
+
+# ============================
+# 3. API Tareas
+# ============================
+
+# Listar tareas
+GET http://localhost:3000/api/tareas
+
+# Obtener tarea por ID
+GET http://localhost:3000/api/tareas/:idTarea
+
+# Crear tarea (requiere id_proyecto existente)
+POST http://localhost:3000/api/tareas
+Body (JSON):
+{
+  "titulo_tarea": "Configurar servidor",
+  "descripcion_tarea": "Instalar dependencias y configurar Fastify",
+  "fecha_inicio": "2025-11-25",
+  "fecha_fin": "2025-11-27",
+  "estado_tarea": "Pendiente",
+  "id_proyecto": "b7a9f3d2-1234-5678-9abc-def012345678",
+  "id_responsable": "cc1285d8-0fda-4cd6-841b-cb42eb2afe44"
+}
+
+# Actualizar tarea
+PUT http://localhost:3000/api/tareas/:idTarea
+Body (JSON):
+{
+  "titulo_tarea": "Configurar servidor y base de datos",
+  "descripcion_tarea": "Instalar dependencias, configurar Fastify y Postgres",
+  "fecha_inicio": "2025-11-25",
+  "fecha_fin": "2025-11-28",
+  "estado_tarea": "En ejecución",
+  "id_proyecto": "b7a9f3d2-1234-5678-9abc-def012345678",
+  "id_responsable": "cc1285d8-0fda-4cd6-841b-cb42eb2afe44"
+}
+
+# Eliminar tarea
+DELETE http://localhost:3000/api/tareas/:idTarea

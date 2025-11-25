@@ -1,12 +1,12 @@
-//Interface
 export interface IProyecto {
-    idProyecto? : string;
-    nombreProyecto: string;
-    descripcionProyecto: string;
-    clienteId : string;
-    fecha_inicio: Date;
-    fecha_fin: Date
-    estadoProyecto: string;
-    consultor_asignado: string;
-    roles_definidos: string    
+    id_proyecto?: string;
+    codigo_proyecto: string;
+    nombre_proyecto: string;
+    descripcion_proyecto: string;
+    fecha_inicio: string;  
+    fecha_fin?: string | null;
+    estado_proyecto: "Planificado" | "En ejecución" | "Finalizado";
+    id_cliente: string;
+    consultor_asignado?: string | null;
+    roles_definidos?: string | null;
 }

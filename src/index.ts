@@ -1,10 +1,9 @@
 import Fastify from "fastify";
 import dotenv from "dotenv";
-
-// CLIENTES / PROYECTOS / TAREAS
+import fastifyPostgres from "@fastify/postgres"; 
 import { clienteRutas } from "./interfaces/rutas/clienteRutas";
 import { proyectoRutas } from "./interfaces/rutas/proyectoRutas";
-import { tareaRutas } from "./interfaces/rutas/tarearRutas";
+import { tareaRutas } from "./interfaces/rutas/tareaRutas";
 
 // REPOSITORIOS
 import { RepositorioClientePostgres } from "./infraestructura/repositorios/repositorioClientePostgres";
@@ -36,6 +35,10 @@ dotenv.config();
 const PUERTO = process.env.PUERTO || 3000;
 
 const app = Fastify({ logger: true });
+
+app.register(fastifyPostgres, {
+  connectionString: process.env.DATABASE_URL, 
+});
 
 async function start() {
   try {

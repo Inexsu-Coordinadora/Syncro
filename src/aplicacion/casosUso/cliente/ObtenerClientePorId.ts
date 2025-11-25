@@ -1,6 +1,6 @@
-import { ICliente } from "../../dominio/entidades/ICliente";
-import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
-import { NotFoundError } from "../errors/NotFoundError";
+import { ICliente } from "../../../dominio/entidades/ICliente";
+import { IRepositorioCliente } from "../../../dominio/repositorio/IRepositorioCliente";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 export class ObtenerClientePorId {
     private repositorioCliente: IRepositorioCliente;
