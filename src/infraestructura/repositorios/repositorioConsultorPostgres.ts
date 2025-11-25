@@ -8,6 +8,15 @@ export class RepositorioConsultorPostgres implements IRepositorioConsultor {
   async crear(consultor: IConsultor): Promise<IConsultor> {
     const cliente = await this.servidor.pg.connect();
     try {
+
+      const existente = await cliente.query(
+      'SELECT 1 FROM consultores WHERE "idConsultor" = $1',
+      [consultor.idConsultor]
+    );
+    
+    if (existente.rows.length > 0) {
+      throw new Error('El consultor ya existe');
+    }
       const resultado = await cliente.query(
         'INSERT INTO consultores ("idConsultor", "nombreConsultor", "especialidadConsultor", "emailConsultor", "telefonoConsultor") VALUES ($1, $2, $3, $4, $5) RETURNING *',
         [
@@ -18,7 +27,7 @@ export class RepositorioConsultorPostgres implements IRepositorioConsultor {
           consultor.telefonoConsultor
         ]
       );
-      return resultado.rows[0]; // Retornar un solo objeto, no el array
+      return resultado.rows[0];
     } catch (error) {
       throw new Error(`Error al crear consultor: ${error}`);
     } finally {
