@@ -8,7 +8,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "migrate": "node-pg-migrate up",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/servidor.js"
   },
   "keywords": [],
   "author": "",
