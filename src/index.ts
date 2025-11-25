@@ -1,6 +1,6 @@
 import { crearServidorBase } from './interfaces/servidor';
 import { RepositorioProyectoPostgres } from './infraestructura/repositorios/repositorioProyectoPostgres';
-import { RepositorioConsultorPostgres } from './infraestructura/repositorios/repositorioConsultorPostgres'; // Importado y renombrado a Postgres (verifica tu nombre de archivo real)
+import { RepositorioConsultorPostgres } from './infraestructura/repositorios/repositorioConsultorPostgres';
 import { proyectoRutas } from './interfaces/rutas/proyectoRutas';
 import { CrearProyecto } from './aplicacion/casosUso/proyecto/CrearProyecto';
 import { ListarProyectos } from './aplicacion/casosUso/proyecto/ListarProyectos';
@@ -33,7 +33,7 @@ const start = async () => {
     const asignarConsultor = new AsignarConsultorProyecto(
         repositorioAsignaciones, 
         repositorioProyectos, 
-        repositorioConsultores // Descomentado y usado
+        repositorioConsultores 
     );
 
     // Registrar rutas de Proyectos 
