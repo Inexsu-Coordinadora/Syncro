@@ -1,6 +1,6 @@
 import { IAsignacion } from '../../../dominio/entidades/IAsignacion';
 import { IRepositorioAsignacion } from '../../../dominio/repositorio/IRepositorioAsignacion';
-import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto'; 
+import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
 //import { IRepositorioConsultor } from '../../dominio/repositorio/IRepositorioConsultor'; 
 
 export class AsignarConsultorProyecto {

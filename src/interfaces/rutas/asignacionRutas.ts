@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { AsignarConsultorProyecto } from '../../aplicacion/casosUso/proyecto/AsignarConsultorProyecto';
+import { AsignarConsultorProyecto } from '../../aplicacion/casosUso/asignar_consultor/AsignarConsultorProyecto';
 import { IAsignacion } from '../../dominio/entidades/IAsignacion';
 import { HttpStatus } from '../../common/statusCode';
 
