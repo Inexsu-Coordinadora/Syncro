@@ -1,5 +1,5 @@
-import { ICliente } from "../../dominio/entidades/ICliente";
-import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
+import { ICliente } from "../../../dominio/entidades/ICliente";
+import { IRepositorioCliente } from "../../../dominio/repositorio/IRepositorioCliente";
 
 export class ListarClientes {
     private repositorioCliente: IRepositorioCliente;
@@ -9,6 +9,6 @@ export class ListarClientes {
     }
 
     async ejecutar(): Promise<ICliente[]> {
-        return await this.repositorioCliente.obtenerCliente();
+        return await this.repositorioCliente.listarClientes();
     }
 }

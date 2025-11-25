@@ -17,8 +17,16 @@ export function clienteRutas(
     eliminar: EliminarCliente
 ) {
     return async function (servidor: FastifyInstance) {
-        servidor.get("/", async () => listar.ejecutar());
+        // Listar todos los clientes
+        servidor.get("/", async (_req, res) => {
+            try {
+                return await listar.ejecutar();
+            } catch (e) {
+                return mapearError(res, e);
+            }
+        });
 
+        // Obtener cliente por ID
         servidor.get("/:id", async (
             req: FastifyRequest<{ Params: { id: string } }>,
             res: FastifyReply
@@ -32,6 +40,7 @@ export function clienteRutas(
             }
         });
 
+        // Crear cliente
         servidor.post("/", async (
             req: FastifyRequest<{ Body: ICliente }>,
             res: FastifyReply
@@ -40,12 +49,15 @@ export function clienteRutas(
             if (!parse.success) return res.status(400).send(parse.error);
 
             try {
-                return await crear.ejecutar(parse.data);
+                const nuevo = await crear.ejecutar(parse.data);
+                return res.status(201).send(nuevo);
             } catch (e) {
+                console.error("Error al crear cliente:", e);
                 return mapearError(res, e);
             }
         });
 
+        // Actualizar cliente
         servidor.put("/:id", async (
             req: FastifyRequest<{ Params: { id: string }; Body: ICliente }>,
             res: FastifyReply
@@ -62,6 +74,7 @@ export function clienteRutas(
             }
         });
 
+        // Eliminar cliente
         servidor.delete("/:id", async (
             req: FastifyRequest<{ Params: { id: string } }>,
             res: FastifyReply

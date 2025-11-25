@@ -1,5 +1,5 @@
-import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
-import { NotFoundError } from "../errors/NotFoundError";
+import { IRepositorioCliente } from "../../../dominio/repositorio/IRepositorioCliente";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 export class EliminarCliente {
     private repositorioCliente: IRepositorioCliente;
