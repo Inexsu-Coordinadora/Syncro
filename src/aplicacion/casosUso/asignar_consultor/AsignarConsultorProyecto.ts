@@ -1,13 +1,13 @@
 import { IAsignacion } from '../../../dominio/entidades/IAsignacion';
 import { IRepositorioAsignacion } from '../../../dominio/repositorio/IRepositorioAsignacion';
-import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto'; 
-//import { IRepositorioConsultor } from '../../dominio/repositorio/IRepositorioConsultor'; 
+import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
+import { IRepositorioConsultor } from '../../../dominio/repositorio/IRepositorioConsultor';
 
 export class AsignarConsultorProyecto {
   constructor(
     private readonly repoAsignacion: IRepositorioAsignacion,
     private readonly repoProyecto: IRepositorioProyecto, 
-   // private readonly repoConsultor: IRepositorioConsultor 
+    private readonly repoConsultor: IRepositorioConsultor 
   ) {}
 
   async ejecutar(datos: IAsignacion): Promise<IAsignacion> {
@@ -15,9 +15,9 @@ export class AsignarConsultorProyecto {
 
     // 1. Verificar existencia de consultor y proyecto
     const proyectoExiste = await this.repoProyecto.obtenerProyectoPorId(proyectoId);
-   // const consultorExiste = await this.repoConsultor.obtenerConsultorPorId(consultorId);
+   const consultorExiste = await this.repoConsultor.obtenerPorId(consultorId);
     if (!proyectoExiste) throw new Error(`Proyecto ${proyectoId} inexistente.`);
-   // if (!consultorExiste) throw new Error(`Consultor ${consultorId} inexistente.`);
+   if (!consultorExiste) throw new Error(`Consultor ${consultorId} inexistente.`);
 
     // 2. Validar fechas (fin no puede ser anterior a inicio)
     if (fechaFin < fechaInicio) throw new Error("Fechas inválidas (fin no puede ser anterior a inicio).");
