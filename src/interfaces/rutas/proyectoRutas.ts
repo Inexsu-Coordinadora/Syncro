@@ -8,8 +8,6 @@ import { IProyecto } from '../../dominio/entidades/IProyecto';
 import { NotFoundError } from '../../aplicacion/errors/NotFoundError';
 import { HttpStatus } from '../../common/statusCode';
 
-
-
 // Definición de las rutas para la entidad Proyecto
 export function proyectoRutas(
   crear: CrearProyecto,

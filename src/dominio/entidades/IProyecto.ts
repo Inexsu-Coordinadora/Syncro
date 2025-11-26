@@ -1,4 +1,5 @@
 export interface IProyecto {
+    
     idProyecto? : string | undefined;
     nombreProyecto: string;
     descripcionProyecto: string;

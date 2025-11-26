@@ -3,11 +3,9 @@ import { IAsignacion } from '../../dominio/entidades/IAsignacion';
 import { IRepositorioAsignacion } from '../../dominio/repositorio/IRepositorioAsignacion';
 import { any } from 'zod';  
 
-
 export class RepositorioAsignacionPG implements IRepositorioAsignacion {
   constructor(private servidor: FastifyInstance) {}
 
-  
   async crearAsignacion(asignacion: IAsignacion): Promise<IAsignacion> {
     const { consultorId, proyectoId, rolConsultor, porcentajeDedicacion, fechaInicio, fechaFin } = asignacion;
     const cliente = await this.servidor.pg.connect();

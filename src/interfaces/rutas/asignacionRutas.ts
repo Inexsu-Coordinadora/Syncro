@@ -3,7 +3,6 @@ import { AsignarConsultorProyecto } from '../../aplicacion/casosUso/asignar_cons
 import { IAsignacion } from '../../dominio/entidades/IAsignacion';
 import { HttpStatus } from '../../common/statusCode'; 
 
-
 export function asignacionRutas(asignar: AsignarConsultorProyecto) {
   return async function (servidor: FastifyInstance) {
     

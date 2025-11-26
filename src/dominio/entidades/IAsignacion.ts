@@ -1,5 +1,6 @@
 export interface IAsignacion {
     
+    
     idAsignacion? : number;
     consultorId: string;
     proyectoId: string;
