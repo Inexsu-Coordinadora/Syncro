@@ -6,5 +6,4 @@ export interface IRepositorioConsultor {
   actualizar(idConsultor: string, consultor: IConsultor): Promise<IConsultor | null>;
   eliminar(idConsultor: string): Promise<boolean>;
   obtener(): Promise<IConsultor[]>
-  existeEmail(email: string): Promise<boolean>;
 }
