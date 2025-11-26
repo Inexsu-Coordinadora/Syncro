@@ -1,6 +1,7 @@
-import fastify, { FastifyInstance } from 'fastify';
-import { configurarConexionBD } from '../configuracion/conexionBD';
+import Fastify, { FastifyInstance } from "fastify";
+import consultorRutas from "../interfaces/rutas/consultorRutas";
 
+<<<<<<< HEAD
 export const crearServidorBase = async (): Promise<FastifyInstance> => {
     const servidor = fastify({ 
         logger: true,
@@ -17,3 +18,14 @@ export const crearServidorBase = async (): Promise<FastifyInstance> => {
 
     return servidor;
 }
+=======
+export function crearServidorBase(): FastifyInstance {
+    const app = Fastify({ logger: true });
+
+    app.register(consultorRutas, { prefix: "/api" });
+
+    
+
+    return app;
+}
+>>>>>>> b30b58e262039a921993cc4e13d2a9ce26e55470

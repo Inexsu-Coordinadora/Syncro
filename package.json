@@ -31,7 +31,17 @@
     "@types/uuid": "^10.0.0",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.5",
+    "node-pg-migrate": "^8.0.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inexsu-Coordinadora/Syncro.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Inexsu-Coordinadora/Syncro/issues"
+  },
+  "homepage": "https://github.com/Inexsu-Coordinadora/Syncro#readme"
 }
