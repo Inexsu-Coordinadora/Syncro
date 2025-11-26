@@ -7,7 +7,7 @@ import { ListarConsultor } from "../../aplicacion/casosUso/consultor/ListarConsu
 import { ObtenerConsultorPorId } from "../../aplicacion/casosUso/consultor/ObtenerConsultorPorId";
 
 export default async function consultorRutas(app: FastifyInstance) {
-  const repo = new RepositorioConsultorPostgres();
+  const repo = new RepositorioConsultorPostgres(app);
 
   app.put<{ Params: { idConsultor: string } }>("/consultores/:idConsultor", async (request, reply) => {
         try {

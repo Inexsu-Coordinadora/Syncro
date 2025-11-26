@@ -5,5 +5,5 @@ export interface IRepositorioConsultor {
   obtenerPorId(idConsultor: string): Promise<IConsultor | null>;
   actualizar(idConsultor: string, consultor: IConsultor): Promise<IConsultor | null>;
   eliminar(idConsultor: string): Promise<boolean>;
-  obtener(): Promise<IConsultor[]>;
+  obtener(): Promise<IConsultor[]>
 }
