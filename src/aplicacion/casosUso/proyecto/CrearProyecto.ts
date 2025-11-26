@@ -1,14 +1,12 @@
+
 import { IProyecto } from '../../../dominio/entidades/IProyecto';
 import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
 
 // Caso de uso para crear un nuevo proyecto
 export class CrearProyecto {
-  constructor(private readonly repo: IRepositorioProyecto) {}
+    constructor(private repo: IRepositorioProyecto) {}
 
-  async ejecutar(datos: IProyecto): Promise<IProyecto> {
-    if (datos.estadoProyecto !== 'Planificado') {
-      throw new Error('El estado inicial debe ser Planificado.');
+    async ejecutar(datos: IProyecto) {
+        return await this.repo.crearProyecto(datos);
     }
-    return this.repo.crearProyecto(datos);
-  }
 }

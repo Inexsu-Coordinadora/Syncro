@@ -1,66 +1,91 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { ClientePostgres } from '../../infraestructura/repositorios/repositorioClientePostgres';
-import { ConsultarProyectosPorCliente } from '../../aplicacion/consultarProyectoPorCliente/consultarProyectoPorCliente'; 
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { ICliente } from "../../dominio/entidades/ICliente";
+import { CrearCliente } from "../../aplicacion/casosUso/cliente/crearCliente";
+import { ListarClientes } from "../../aplicacion/casosUso/cliente/ListarClientes";
+import { ObtenerClientePorId } from "../../aplicacion/casosUso/cliente/ObtenerClientePorId";
+import { ActualizarCliente } from "../../aplicacion/casosUso/cliente/ActualizarCliente";
+import { EliminarCliente } from "../../aplicacion/casosUso/cliente/EliminarCliente";
+import { ClienteEsquema } from "../validaciones/clienteEsquema";
+import { mapearError } from "../util/mapearErrores";
+import { NotFoundError } from "../../aplicacion/errors/NotFoundError";
 
-
-export default async function clienteRutas(fastify: FastifyInstance) {
-
-    const repositorioCliente = new ClientePostgres(); 
-
-    const obtenerProyectosSchema = {
-        params: {
-            type: 'object',
-            properties: {
-                id: { 
-                    type: 'string', 
-                    description: 'ID del cliente (UUID)', 
-                     format: 'uuid' 
-                }
-            },
-            required: ['id']
-        }
-    };
-
-
-    fastify.get('/clientes/:id/proyectos', { schema: obtenerProyectosSchema }, async (request: FastifyRequest, reply: FastifyReply) => {
-        const { id } = request.params as { id: string };
-        
-        const casoUso = new ConsultarProyectosPorCliente(repositorioCliente);
-
-        try {
-            const proyectos = await casoUso.ejecutar(id);
-            
-            reply.status(200).send({ 
-                status: 'success', 
-                data: proyectos 
-            });
-
-        } catch (error) {
-            
-            const errorMsg = (error as Error).message || 'Error interno del servidor';
-            let statusCode = 500;
-            let errorCode = 'INTERNAL_ERROR';
-            
-            
-            if (errorMsg.includes('CLIENTE_INEXISTENTE')) {
-                statusCode = 404; 
-                errorCode = 'CLIENTE_INEXISTENTE';
-            } else if (errorMsg.includes('VALIDACION_ID_REQUERIDO')) {
-                
-                statusCode = 400; 
-                errorCode = 'ID_REQUERIDO';
-            } else if (errorMsg.includes('ERR_FASTIFY_VALIDATION')) {
-        
-                statusCode = 400;
-                errorCode = 'FORMATO_ID_INVALIDO';
+export function clienteRutas(
+    crear: CrearCliente,
+    listar: ListarClientes,
+    obtener: ObtenerClientePorId,
+    actualizar: ActualizarCliente,
+    eliminar: EliminarCliente
+) {
+    return async function (servidor: FastifyInstance) {
+        // Listar todos los clientes
+        servidor.get("/", async (_req, res) => {
+            try {
+                return await listar.ejecutar();
+            } catch (e) {
+                return mapearError(res, e);
             }
-            
-            reply.status(statusCode).send({ 
-                status: 'error', 
-                code: errorCode,
-                message: errorMsg
-            });
-        }
-    });
+        });
 
+        // Obtener cliente por ID
+        servidor.get("/:id", async (
+            req: FastifyRequest<{ Params: { id: string } }>,
+            res: FastifyReply
+        ) => {
+            try {
+                const cliente = await obtener.ejecutar(req.params.id);
+                if (!cliente) throw new NotFoundError("Cliente no encontrado");
+                return cliente;
+            } catch (e) {
+                return mapearError(res, e);
+            }
+        });
+
+        // Crear cliente
+        servidor.post("/", async (
+            req: FastifyRequest<{ Body: ICliente }>,
+            res: FastifyReply
+        ) => {
+            const parse = ClienteEsquema.safeParse(req.body);
+            if (!parse.success) return res.status(400).send(parse.error);
+
+            try {
+                const nuevo = await crear.ejecutar(parse.data);
+                return res.status(201).send(nuevo);
+            } catch (e) {
+                console.error("Error al crear cliente:", e);
+                return mapearError(res, e);
+            }
+        });
+
+        // Actualizar cliente
+        servidor.put("/:id", async (
+            req: FastifyRequest<{ Params: { id: string }; Body: ICliente }>,
+            res: FastifyReply
+        ) => {
+            const parse = ClienteEsquema.safeParse(req.body);
+            if (!parse.success) return res.status(400).send(parse.error);
+
+            try {
+                const actualizado = await actualizar.ejecutar(req.params.id, parse.data);
+                if (!actualizado) throw new NotFoundError("Cliente no encontrado");
+                return actualizado;
+            } catch (e) {
+                return mapearError(res, e);
+            }
+        });
+
+        // Eliminar cliente
+        servidor.delete("/:id", async (
+            req: FastifyRequest<{ Params: { id: string } }>,
+            res: FastifyReply
+        ) => {
+            try {
+                const ok = await eliminar.ejecutar(req.params.id);
+                if (!ok) throw new NotFoundError("Cliente no encontrado");
+                return { mensaje: "Eliminado" };
+            } catch (e) {
+                return mapearError(res, e);
+            }
+        });
+    };
 }

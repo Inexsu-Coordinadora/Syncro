@@ -1,0 +1,27 @@
+meta {
+  name: ActualizarTarea
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:3000/api/tareas/929c5fdd-913c-4f85-b066-62f803492c15
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "codigo_tarea": "T-00",
+    "nombre_tarea": "Ajustes proyecto syncro",
+    "estado": "completada",
+    "fecha_limite": "2025-12-01T00:00:00Z",
+    "id_proyecto": "d12e0573-d2d0-4eed-9de0-3cf039dc5e5b"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
