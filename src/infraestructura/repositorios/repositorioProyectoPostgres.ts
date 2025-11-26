@@ -20,22 +20,22 @@ export class RepositorioProyectoPostgres implements IRepositorioProyecto {
   }
 
   async crearProyecto(proyecto: IProyecto): Promise<IProyecto> {
-    const { nombreProyecto, descripcionProyecto, clienteId, fecha_inicio, fecha_fin, estadoProyecto, consultor_asignado, roles_definidos } = proyecto;
+    const { nombreProyecto, descripcionProyecto, clienteId, fechaInicio, fechaFin, estadoProyecto, consultorAsignado, rolesDefinidos } = proyecto;
     const cliente = await this.servidor.pg.connect();
     const resultado = await cliente.query(
-      'INSERT INTO proyectos ("nombreProyecto", "descripcionProyecto", "clienteId", fecha_inicio, fecha_fin, "estadoProyecto", consultor_asignado, roles_definidos) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [nombreProyecto, descripcionProyecto, clienteId, fecha_inicio, fecha_fin, estadoProyecto, consultor_asignado, roles_definidos]
+      'INSERT INTO proyectos ("nombreProyecto", "descripcionProyecto", "clienteId", fechaInicio, fechaFin, "estadoProyecto", consultorAsignado, rolesDefinidos) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [nombreProyecto, descripcionProyecto, clienteId, fechaInicio, fechaFin, estadoProyecto, consultorAsignado, rolesDefinidos]
     );
     cliente.release();
     return resultado.rows[0];
   }
 
   async actualizarProyecto(id: string, proyecto: IProyecto): Promise<IProyecto | null> {
-      const { nombreProyecto, descripcionProyecto, clienteId, fecha_inicio, fecha_fin, estadoProyecto, consultor_asignado, roles_definidos } = proyecto;
+      const { nombreProyecto, descripcionProyecto, clienteId, fechaInicio, fechaFin, estadoProyecto, consultorAsignado, rolesDefinidos } = proyecto;
       const cliente = await this.servidor.pg.connect();
       const resultado = await cliente.query(
-        'UPDATE proyectos SET "nombreProyecto" = $1, "descripcionProyecto" = $2, "clienteId" = $3, fecha_inicio = $4, fecha_fin = $5, "estadoProyecto" = $6, consultor_asignado = $7, roles_definidos = $8 WHERE "idProyecto" = $9 RETURNING *',
-        [nombreProyecto, descripcionProyecto, clienteId, fecha_inicio, fecha_fin, estadoProyecto, consultor_asignado, roles_definidos, id]
+        'UPDATE proyectos SET "nombreProyecto" = $1, "descripcionProyecto" = $2, "clienteId" = $3, fechaInicio = $4, fechaFin = $5, "estadoProyecto" = $6, consultorAsignado = $7, rolesDefinidos = $8 WHERE "idProyecto" = $9 RETURNING *',
+        [nombreProyecto, descripcionProyecto, clienteId, fechaInicio, fechaFin, estadoProyecto, consultorAsignado, rolesDefinidos, id]
       );
       cliente.release();
       return resultado.rows.length > 0 ? resultado.rows[0] : null;

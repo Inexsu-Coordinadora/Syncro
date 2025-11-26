@@ -30,8 +30,8 @@ export function proyectoRutas(
     });
 
     servidor.post('/', async (peticion: FastifyRequest<{ Body: IProyecto }>, respuesta: FastifyReply) => {
-        if (peticion.body.fecha_inicio) peticion.body.fecha_inicio = new Date(peticion.body.fecha_inicio);
-        if (peticion.body.fecha_fin) peticion.body.fecha_fin = new Date(peticion.body.fecha_fin);
+        if (peticion.body.fechaInicio) peticion.body.fechaInicio = new Date(peticion.body.fechaInicio);
+        if (peticion.body.fechaFin) peticion.body.fechaFin = new Date(peticion.body.fechaFin);
         try {
             const nuevoProyecto = await crear.ejecutar(peticion.body);
             return respuesta.status(HttpStatus.CREADO).send(nuevoProyecto);
@@ -41,8 +41,8 @@ export function proyectoRutas(
     });
 
     servidor.put('/:idProyecto', async (peticion: FastifyRequest<{ Params: { idProyecto: string }, Body: IProyecto }>, respuesta: FastifyReply) => {
-    if (peticion.body.fecha_inicio) peticion.body.fecha_inicio = new Date(peticion.body.fecha_inicio);
-    if (peticion.body.fecha_fin) peticion.body.fecha_fin = new Date(peticion.body.fecha_fin);
+    if (peticion.body.fechaInicio) peticion.body.fechaInicio = new Date(peticion.body.fechaInicio);
+    if (peticion.body.fechaFin) peticion.body.fechaFin = new Date(peticion.body.fechaFin);
         try {
             const proyectoActualizado = await actualizar.ejecutar(peticion.params.idProyecto, peticion.body);
             if (!proyectoActualizado) return respuesta.status(HttpStatus.NO_ENCONTRADO).send({ mensaje: 'Proyecto no encontrado' });

@@ -3,9 +3,9 @@ export interface IProyecto {
     nombreProyecto: string;
     descripcionProyecto: string;
     clienteId : string;
-    fecha_inicio: Date;
-    fecha_fin: Date
+    fechaInicio: Date;
+    fechaFin: Date
     estadoProyecto: string;
-    consultor_asignado: string;
-    roles_definidos: string    
+    consultorAsignado: string;
+    rolesDefinidos: string    
 }
