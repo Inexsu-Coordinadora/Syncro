@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+
 export const ProyectoEsquema = z.object({
     nombreProyecto: z.string().min(1, "El nombre del proyecto es obligatorio"),
     descripcionProyecto: z.string().min(1, "La descripción es obligatoria"),

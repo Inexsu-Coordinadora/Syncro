@@ -6,4 +6,5 @@ export interface IAsignacion {
     porcentajeDedicacion: number;
     fechaInicio: Date;
     fechaFin: Date;
+    
 }

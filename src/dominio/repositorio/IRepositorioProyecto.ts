@@ -8,4 +8,5 @@ export interface IRepositorioProyecto {
         datosProyecto: IProyecto
     ): Promise<IProyecto | null>;
     eliminarProyecto(id: string): Promise<string>;
+    
 }
