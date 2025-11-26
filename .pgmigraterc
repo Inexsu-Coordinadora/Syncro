@@ -1,0 +1,11 @@
+{
+    "dir": "migrations", 
+  "migrationsTable": "pgmigrations",
+    "databaseUrl": {
+        "user": "${PGUSER}",
+        "password": "${PGPASSWORD}",
+        "host": "${PGHOST}",
+        "port": "${PGPORT}",
+        "database": "${PGDATABASE}"
+    }
+}
