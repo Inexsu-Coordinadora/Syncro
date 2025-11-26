@@ -3,6 +3,7 @@ import { IRepositorioAsignacion } from '../../../dominio/repositorio/IRepositori
 import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
 import { IRepositorioConsultor } from '../../../dominio/repositorio/IRepositorioConsultor'; 
 
+
 export class AsignarConsultorProyecto {
   constructor(
     private readonly repoAsignacion: IRepositorioAsignacion,
