@@ -3,8 +3,9 @@ import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioClien
 import { ICliente } from "../../dominio/entidades/ICliente";
 import { NotFoundError } from "../../aplicacion/errors/NotFoundError";
 import { PersistenceError } from "../../aplicacion/errors/PersistenceError";
+import { ProyectoResumen } from "../../interfaces/rutas/proyectoResumen"; 
 
-export class RepositorioClientePostgres implements IRepositorioCliente {
+export class repositorioClientePostgres implements IRepositorioCliente {
     constructor(private servidor: FastifyInstance) {}
 
     async listarClientes(): Promise<ICliente[]> {
@@ -86,6 +87,21 @@ export class RepositorioClientePostgres implements IRepositorioCliente {
             console.error("Error en eliminarCliente:", { message: e.message, code: e.code, detail: e.detail });
             if (e instanceof NotFoundError) throw e;
             throw new PersistenceError("Error al eliminar cliente");
+        } finally {
+            con.release();
+        }
+    }
+
+    // 🏆 MÉTODO FALTANTE IMPLEMENTADO
+    async consultarProyectosPorCliente(clienteId: string): Promise<ProyectoResumen[]> {
+        const con = await this.servidor.pg.connect();
+        try {
+            // Lógica placeholder: debes completarla con tu consulta real.
+            const res = await con.query("SELECT id_proyecto, nombre_proyecto, estado_proyecto FROM proyectos WHERE id_cliente = $1", [clienteId]);
+            return res.rows;
+        } catch (e: any) {
+            console.error("Error en consultarProyectosPorCliente:", { message: e.message, code: e.code, detail: e.detail });
+            throw new PersistenceError("Error al consultar proyectos por cliente");
         } finally {
             con.release();
         }

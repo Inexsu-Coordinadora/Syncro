@@ -1,55 +1,96 @@
-import { ActualizarCliente } from "../../../../src/aplicacion/casosUso/cliente/ActualizarCliente";
-import { NotFoundError } from "../../../../src/aplicacion/errors/NotFoundError";
-import { ValidationError } from "../../../../src/aplicacion/errors/ValidationError";
-import { ICliente } from "../../../../src/dominio/entidades/ICliente";
+import { ActualizarCliente } from '../../../aplicacion/casosUso/cliente/ActualizarCliente';
+import { ICliente } from '../../../dominio/entidades/ICliente';
+import { IRepositorioCliente } from '../../../dominio/repositorio/IRepositorioCliente';
+import { NotFoundError } from '../../../aplicacion/errors/NotFoundError';
+import { ValidationError } from '../../../aplicacion/errors/ValidationError';
 
-describe("ActualizarCliente (unit)", () => {
-    const repoMock = {
-        actualizarCliente: jest.fn(),
-    };
+// Creamos un objeto mock que implementa la interfaz IRepositorioCliente
+const mockRepositorioCliente:IRepositorioCliente = {
+    crearCliente: jest.fn(),
+    obtenerClientePorId: jest.fn(),
+    actualizarCliente: jest.fn(),
+    eliminarCliente: jest.fn(),
+    listarClientes: jest.fn(),
+    consultarProyectosPorCliente: jest.fn(),
+};
 
-    const casoUso = new ActualizarCliente(repoMock as any);
+// Datos de prueba
+const idClienteValido = "123e4567-e89b-12d3-a456-426614174000";
+const idClienteNoExistente = "999e4567-e89b-12d3-a456-426614174000";
+const datosClienteValidos: ICliente = {
+    nombre_cliente: "Nuevo Nombre",
+    direccion_cliente: "Nueva Dirección",
+    email_cliente: "nuevo@ejemplo.com",
+};
+const clienteActualizado: ICliente = {
+    id_cliente: idClienteValido,
+    ...datosClienteValidos,
+};
+
+
+describe('ActualizarCliente', () => {
+    let actualizarCliente: ActualizarCliente;
+
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.clearAllMocks(); 
+        
+        actualizarCliente = new ActualizarCliente(mockRepositorioCliente);
     });
 
-    test("lanza ValidationError si faltan campos obligatorios", async () => {
-        const clienteInvalido = {
-            nombre_cliente: "",
-            direccion_cliente: "",
-            email_cliente: "",
-        } as ICliente;
+    test('debe actualizar un cliente y retornar el cliente actualizado', async () => {
+        // Mock: Simular que el repositorio retorna el cliente actualizado
+        mockRepositorioCliente.actualizarCliente = jest.fn().mockResolvedValue(clienteActualizado);
 
-        await expect(casoUso.ejecutar("id123", clienteInvalido))
-            .rejects.toThrow(ValidationError);
+        const resultado = await actualizarCliente.ejecutar(idClienteValido, datosClienteValidos);
+
+        expect(mockRepositorioCliente.actualizarCliente).toHaveBeenCalledWith(idClienteValido, datosClienteValidos);
+        expect(resultado).toEqual(clienteActualizado);
     });
 
-    test("lanza NotFoundError si el cliente no existe", async () => {
-        const clienteValido = {
-            nombre_cliente: "Maria",
-            direccion_cliente: "Calle 1",
-            email_cliente: "maria@test.com",
-        } as ICliente;
+    // --- PRUEBAS DE VALIDACIÓN Y ERRORES ---
 
-        repoMock.actualizarCliente.mockResolvedValue(null);
+    test('debe lanzar ValidationError si el ID del cliente es nulo o vacío', async () => {
+        // ID vacío
+        await expect(actualizarCliente.ejecutar("", datosClienteValidos)).rejects.toThrow(ValidationError);
+        await expect(actualizarCliente.ejecutar("", datosClienteValidos)).rejects.toThrow("El ID del cliente es obligatorio para la actualización.");
 
-        await expect(casoUso.ejecutar("id123", clienteValido))
-            .rejects.toThrow(NotFoundError);
+        // ID nulo
+        await expect(actualizarCliente.ejecutar(null as any, datosClienteValidos)).rejects.toThrow(ValidationError);
     });
 
-    test("retorna cliente actualizado si existe", async () => {
-        const clienteValido = {
-            nombre_cliente: "Maria",
-            direccion_cliente: "Calle 1",
-            email_cliente: "maria@test.com",
-        } as ICliente;
+    test('debe lanzar ValidationError si falta el nombre_cliente', async () => {
+        const datosInvalidos: ICliente = { ...datosClienteValidos, nombre_cliente: "" };
 
-        repoMock.actualizarCliente.mockResolvedValue(clienteValido);
+        await expect(actualizarCliente.ejecutar(idClienteValido, datosInvalidos)).rejects.toThrow(ValidationError);
+        await expect(actualizarCliente.ejecutar(idClienteValido, datosInvalidos)).rejects.toThrow("Los campos nombre_cliente, direccion_cliente y email_cliente son obligatorios.");
+    });
+    
+    test('debe lanzar ValidationError si falta la direccion_cliente', async () => {
+        const datosInvalidos: ICliente = { 
+            nombre_cliente: "Nombre", 
+            email_cliente: "a@b.com", 
+            direccion_cliente: "" 
+        };
 
-        const result = await casoUso.ejecutar("id123", clienteValido);
+        await expect(actualizarCliente.ejecutar(idClienteValido, datosInvalidos)).rejects.toThrow(ValidationError);
+    });
 
-        expect(result).toEqual(clienteValido);
-        expect(repoMock.actualizarCliente).toHaveBeenCalledWith("id123", clienteValido);
+    test('debe lanzar ValidationError si falta el email_cliente', async () => {
+        const datosInvalidos: ICliente = { ...datosClienteValidos, email_cliente: "" };
+
+        await expect(actualizarCliente.ejecutar(idClienteValido, datosInvalidos)).rejects.toThrow(ValidationError);
+        await expect(actualizarCliente.ejecutar(idClienteValido, datosInvalidos)).rejects.toThrow("Los campos nombre_cliente, direccion_cliente y email_cliente son obligatorios.");
+    });
+    
+    test('debe lanzar NotFoundError si el cliente no es encontrado por el repositorio', async () => {
+        // Mock: Simular que el repositorio no encontró el cliente (retorna null o undefined)
+        mockRepositorioCliente.actualizarCliente = jest.fn().mockResolvedValue(null);
+
+        await expect(actualizarCliente.ejecutar(idClienteNoExistente, datosClienteValidos)).rejects.toThrow(NotFoundError);
+        await expect(actualizarCliente.ejecutar(idClienteNoExistente, datosClienteValidos)).rejects.toThrow(`Cliente con ID ${idClienteNoExistente} no encontrado.`);
+        
+        // método del repositorio fue llamado
+        expect(mockRepositorioCliente.actualizarCliente).toHaveBeenCalled();
     });
 });
