@@ -1,8 +1,6 @@
-import fastify, { FastifyInstance } from 'fastify';
-import { configurarConexionBD } from '../configuracion/conexionBD';
+import Fastify, { FastifyInstance } from "fastify";
 
-export const crearServidorBase = (): FastifyInstance => {
-    const servidor = fastify({ logger: true });
-    configurarConexionBD(servidor);
-    return servidor;
+export function crearServidorBase(): FastifyInstance {
+    const app = Fastify({ logger: true });
+    return app;
 }
