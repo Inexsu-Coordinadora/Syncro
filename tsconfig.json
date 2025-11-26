@@ -12,7 +12,7 @@
 
     // For nodejs:
     // "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "jest"],  // Make sure to install @types/jest
     // and npm install -D @types/node
 
     // Other Outputs
@@ -34,6 +34,6 @@
 
     // Recommended Options
     "strict": true,
-    "esModuleInterop": true,
+    "esModuleInterop": true
   }
 }
