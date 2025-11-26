@@ -1,93 +1,62 @@
-import { FastifyInstance } from "fastify";
-import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
 import { ICliente } from "../../dominio/entidades/ICliente";
-import { NotFoundError } from "../../aplicacion/errors/NotFoundError";
-import { PersistenceError } from "../../aplicacion/errors/PersistenceError";
+import { IRepositorioCliente } from "../../dominio/repositorio/IRepositorioCliente";
+import { ejecutarConsulta } from "../../infraestructura/cliente-db";
+import { v4 as uuidv4 } from "uuid";
 
-export class RepositorioClientePostgres implements IRepositorioCliente {
-    constructor(private servidor: FastifyInstance) {}
+export class ClientePostgres implements IRepositorioCliente {
 
-    async listarClientes(): Promise<ICliente[]> {
-        const con = await this.servidor.pg.connect();
-        try {
-            const res = await con.query("SELECT * FROM clientes ORDER BY nombre_cliente ASC");
-            return res.rows;
-        } catch (e: any) {
-            console.error("Error en listarClientes:", { message: e.message, code: e.code, detail: e.detail });
-            throw new PersistenceError("Error al listar clientes");
-        } finally {
-            con.release();
-        }
+    async crearCliente(datosCliente: ICliente): Promise<ICliente> {
+        const cliente = await ejecutarConsulta(
+            `INSERT INTO clientes (idCliente, nombreCliente, emailCliente, telefonoCliente, direccionCliente)`
+            + `VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+            [
+                uuidv4(),
+                datosCliente.nombreCliente,
+                datosCliente.emailCliente,
+                datosCliente.telefonoCliente || '',
+                datosCliente.direccionCliente,
+            ]
+        );
+        return cliente.rows[0];
+    }
+
+    async obtenerCliente(): Promise<ICliente[]> {
+        const resultado = await ejecutarConsulta(`SELECT * FROM clientes`);
+        return resultado.rows;
+    }
+
+    async actualizarCliente(
+        idCliente: string,
+        datosCliente: ICliente
+    ): Promise<ICliente> {
+        const clienteActualizado = await ejecutarConsulta(
+            `UPDATE clientes
+            SET nombreCliente = $1, emailCliente = $2, telefonoCliente = $3, direccionCliente = $4
+            WHERE idCliente = $5
+            RETURNING *`,
+            [
+                datosCliente.nombreCliente,
+                datosCliente.emailCliente,
+                datosCliente.telefonoCliente || '',
+                datosCliente.direccionCliente,
+                idCliente
+            ]
+        );
+        return clienteActualizado.rows[0];
+    }
+
+    async eliminarCliente(idCliente: string): Promise<string> {
+        await ejecutarConsulta(
+            `DELETE FROM clientes WHERE idCliente = $1`,
+            [idCliente]);
+            return `Cliente con ID ${idCliente} eliminado exitosamente.`;
     }
 
     async obtenerClientePorId(id: string): Promise<ICliente | null> {
-        const con = await this.servidor.pg.connect();
-        try {
-            const res = await con.query("SELECT * FROM clientes WHERE id_cliente = $1", [id]);
-            return res.rows[0] || null;
-        } catch (e: any) {
-            console.error("Error en obtenerClientePorId:", { message: e.message, code: e.code, detail: e.detail });
-            throw new PersistenceError("Error al consultar cliente por ID");
-        } finally {
-            con.release();
-        }
-    }
-
-    async crearCliente(cliente: ICliente): Promise<ICliente> {
-        const { nombre_cliente, email_cliente, telefono_cliente, direccion_cliente, empresa_cliente } = cliente;
-        const con = await this.servidor.pg.connect();
-        try {
-            const res = await con.query(
-                `INSERT INTO clientes (nombre_cliente, email_cliente, telefono_cliente, direccion_cliente, empresa_cliente)
-                 VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-                [nombre_cliente, email_cliente, telefono_cliente, direccion_cliente, empresa_cliente]
-            );
-            return res.rows[0];
-        } catch (e: any) {
-            console.error("Error en crearCliente:", { message: e.message, code: e.code, detail: e.detail });
-            if (e.code === "23505") {
-                // 23505 = unique_violation
-                throw new PersistenceError("El email ya está registrado");
-            }
-            throw new PersistenceError("Error al crear cliente");
-        } finally {
-            con.release();
-        }
-    }
-
-    async actualizarCliente(id: string, cliente: ICliente): Promise<ICliente | null> {
-        const { nombre_cliente, email_cliente, telefono_cliente, direccion_cliente, empresa_cliente } = cliente;
-        const con = await this.servidor.pg.connect();
-        try {
-            const res = await con.query(
-                `UPDATE clientes
-                 SET nombre_cliente=$1, email_cliente=$2, telefono_cliente=$3, direccion_cliente=$4, empresa_cliente=$5
-                 WHERE id_cliente=$6 RETURNING *`,
-                [nombre_cliente, email_cliente, telefono_cliente, direccion_cliente, empresa_cliente, id]
-            );
-            return res.rows[0] || null;
-        } catch (e: any) {
-            console.error("Error en actualizarCliente:", { message: e.message, code: e.code, detail: e.detail });
-            throw new PersistenceError("Error al actualizar cliente");
-        } finally {
-            con.release();
-        }
-    }
-
-    async eliminarCliente(id: string): Promise<string> {
-        const con = await this.servidor.pg.connect();
-        try {
-            const res = await con.query("DELETE FROM clientes WHERE id_cliente = $1 RETURNING *", [id]);
-            if (res.rows.length === 0) {
-                throw new NotFoundError(`Cliente con ID ${id} no encontrado`);
-            }
-            return `Cliente ${id} eliminado`;
-        } catch (e: any) {
-            console.error("Error en eliminarCliente:", { message: e.message, code: e.code, detail: e.detail });
-            if (e instanceof NotFoundError) throw e;
-            throw new PersistenceError("Error al eliminar cliente");
-        } finally {
-            con.release();
-        }
+        const resultado = await ejecutarConsulta(
+            `SELECT * FROM clientes WHERE idCliente = $1`,
+            [id]
+        );
+        return resultado.rows[0] || null;
     }
 }

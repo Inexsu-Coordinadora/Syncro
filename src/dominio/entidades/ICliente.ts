@@ -1,12 +1,7 @@
 export interface ICliente {
-    id_cliente?: string;
-    nombre_cliente: string;
-    email_cliente: string;
-    telefono_cliente?: string | undefined;
-    direccion_cliente?: string | undefined;
-    empresa_cliente?: string | undefined;
+    idCliente?: string;
+    nombreCliente: string;
+    direccionCliente: string;
+    telefonoCliente?: string;
+    emailCliente: string;
 }
-
-
-    //proyectos?: IProyecto[]; // Relación con proyectos
-    //consultores?: IConsultor[];// Relación con consultores
