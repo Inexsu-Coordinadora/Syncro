@@ -1,39 +1,44 @@
-export default {
-  preset: 'ts-jest/presets/default-esm',
+module.exports = {
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
+  
+  roots: ['<rootDir>/src', '<rootDir>/test'],
+  
+
+  testMatch: [
+    '**/test/**/*.test.ts',
+    '**/test/**/*.spec.ts'
+  ],
+  
+  
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  
   transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        useESM: true,
-      },
-    ],
+    '^.+\\.ts$': 'ts-jest'
   },
-  roots: ['<rootDir>/tests', '<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true
+      }
+    }
+  },
+  
+
+  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
+  
+
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/**/*.interface.ts'
+    '!src/**/*.test.ts'
   ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
-  moduleFileExtensions: ['ts', 'js', 'json'],
-};
+  
+  
+  testTimeout: 10000,
+  
 
-/** @type {import("jest").Config} **/
-module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  roots: ["<rootDir>/src/test"],
-  moduleFileExtensions: ["ts", "js", "json"],
-  moduleDirectories: ["node_modules", "src"],
-  transform: {
-    "^.+\\.ts$": "ts-jest"
-  },
-  modulePathIgnorePatterns: ["<rootDir>/dist/"]
+  verbose: true
 };

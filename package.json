@@ -4,12 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
   "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
   "start": "node dist/index.js",
   "build": "tsc",
   "test": "jest --runInBand",
   "test:unit": "jest --runInBand --testPathPattern=unit",
   "test:integration": "jest --runInBand --testPathPattern=integration"
+=======
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+  "migrate": "node-pg-migrate up",
+  "build": "tsc",
+  "start": "node dist/index.js"
+>>>>>>> 2daaffac817909a6452fe638ef40e4c35e01f4a4
 },
   "keywords": [],
   "author": "",
@@ -17,7 +32,6 @@
   "dependencies": {
     "@fastify/cors": "^11.1.0",
     "@fastify/postgres": "^6.0.2",
-    "dotenv": "^17.2.3",
     "fastify": "^5.6.1",
     "fastify-cors": "^6.1.0",
     "fastify-plugin": "^5.1.0",
@@ -29,13 +43,25 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
     "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",
+    "dotenv": "^17.2.3",
     "jest": "^30.2.0",
+    "node-pg-migrate": "^8.0.3",
+    "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inexsu-Coordinadora/Syncro.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Inexsu-Coordinadora/Syncro/issues"
+  },
+  "homepage": "https://github.com/Inexsu-Coordinadora/Syncro#readme"
 }
