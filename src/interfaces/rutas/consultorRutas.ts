@@ -1,84 +1,93 @@
-import { FastifyInstance } from "fastify";
-import { RepositorioConsultorPostgres } from "../../infraestructura/repositorios/repositorioConsultorPostgres";
-import { ActualizarConsultor }from "../../aplicacion/casosUso/consultor/ActualizarConsultor"; 
-import { CrearConsultor } from "../../aplicacion/casosUso/consultor/CrearConsultor";
-import { EliminarConsultor } from "../../aplicacion/casosUso/consultor/EliminarConsultor";
-import { ListarConsultor } from "../../aplicacion/casosUso/consultor/ListarConsultor";
-import { ObtenerConsultorPorId } from "../../aplicacion/casosUso/consultor/ObtenerConsultorPorId";
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { Pool } from 'pg';
+import { ConsultorRepositorio } from '../../infraestructura/repositorios/repositorioConsultorPostgres';
+import { CrearConsultor } from '../../aplicacion/casosUso/consultor/CrearConsultor';
+import { ListarConsultor } from '../../aplicacion/casosUso/consultor/ListarConsultor';
+import { ObtenerConsultorPorId } from '../../aplicacion/casosUso/consultor/ObtenerConsultorPorId';
+import { ActualizarConsultor } from '../../aplicacion/casosUso/consultor/ActualizarConsultor';
+import { EliminarConsultor } from '../../aplicacion/casosUso/consultor/EliminarConsultor';
 
-export default async function consultorRutas(app: FastifyInstance) {
-  const repo = new RepositorioConsultorPostgres();
-
-  app.put<{ Params: { idConsultor: string } }>("/consultores/:idConsultor", async (request, reply) => {
-        try {
-            const { idConsultor } = request.params;
-            const data = request.body as any; 
-            const caso = new ActualizarConsultor(repo);
-            const actualizado = await caso.ejecutar(idConsultor, data);
-            
-            if (!actualizado) {
-                return reply.code(404).send({ message: "Consultor no encontrado para actualizar." });
-            }
-            return reply.code(200).send(actualizado);
-        } catch (error) {
-            return reply.code(500).send({ message: "Error al actualizar consultor." });
-        }
-    })
-
-  app.post("/consultores", async (request, reply) => {
-        try {
-            const caso = new CrearConsultor(repo);
-            const nuevo = await caso.ejecutar(request.body as any);
-           
-            return reply.code(201).send(nuevo);
-        } catch (error) {
-            if (error instanceof Error && error.message.includes('unicidad')) {
-                return reply.code(409).send({ message: "Error: El correo electrónico ya está registrado." });
-            }
-            return reply.code(500).send({ message: "Error interno del servidor." });
-        }
-    });
-
-app.delete<{ Params: { idConsultor: string } }>("/consultores/:idConsultor", async (request, reply) => {
-        try {
-            const { idConsultor } = request.params;
-
-            const caso = new EliminarConsultor(repo);
-            const eliminado = await caso.ejecutar(idConsultor);
-            
-            if (!eliminado) {
-                return reply.code(404).send({ message: "Consultor no encontrado para eliminar." });
-            }
-            return reply.code(204).send(); 
-        } catch (error) {
-            return reply.code(500).send({ message: "Error al eliminar consultor." });
-        }
-    });
-
-    app.get("/consultores", async (request, reply) => {
-        try {
-            const caso = new ListarConsultor(repo);
-            const lista = await caso.ejecutar();
-            return reply.code(200).send(lista);
-        } catch (error) {
-            return reply.code(500).send({ message: "Error al listar consultores." });
-        }
-    });
-
-     app.get<{ Params: { idConsultor: string } }>("/consultores/:idConsultor", async (request, reply) => {
-        try {
-            const { idConsultor } = request.params; 
-
-            const caso = new ObtenerConsultorPorId(repo);
-            const consultor = await caso.ejecutar(idConsultor);
-
-            if (!consultor) {
-                return reply.code(404).send({ message: "Consultor no encontrado." });
-            }
-            return reply.code(200).send(consultor);
-        } catch (error) {
-            return reply.code(500).send({ message: "Error al obtener consultor por ID." });
-        }
-    }); 
+interface ConsultorRoutesOptions extends FastifyPluginOptions {
+  pool: Pool;
 }
 
+export default async function consultorRutas(
+  fastify: FastifyInstance,
+  options: ConsultorRoutesOptions
+) {
+  const { pool } = options;
+  const repositorio = new ConsultorRepositorio(pool);
+
+  fastify.post('/api/consultores', async (request, reply) => {
+    try {
+      const crearConsultor = new CrearConsultor(repositorio);
+      const consultor = await crearConsultor.ejecutar(request.body as any);
+      return reply.status(201).send(consultor);
+    } catch (error: any) {
+      if (error.message.includes('ya está registrado')) {
+        return reply.status(409).send({ error: error.message });
+      }
+    
+      return reply.status(400).send({ error: error.message });
+    }
+  });
+
+  fastify.get('/api/consultores', async (_request, reply) => {
+    try {
+      const listarConsultores = new ListarConsultor(repositorio);
+      const consultores = await listarConsultores.ejecutar();
+      return reply.status(200).send(consultores);
+    } catch (error: any) {
+      console.error('Error al listar consultores:', error);
+      return reply.status(500).send({ error: 'Error al listar consultores' });
+    }
+  });
+
+  fastify.get('/api/consultores/:id', async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const obtenerConsultor = new ObtenerConsultorPorId(repositorio);
+      const consultor = await obtenerConsultor.ejecutar(id);
+      
+      if (!consultor) {
+        return reply.status(404).send({ error: 'Consultor no encontrado' });
+      }
+      
+      return reply.status(200).send(consultor);
+    } catch (error: any) {
+      return reply.status(500).send({ error: error.message });
+    }
+  });
+
+  fastify.put('/api/consultores/:id', async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const actualizarConsultor = new ActualizarConsultor(repositorio);
+      const consultor = await actualizarConsultor.ejecutar(id, request.body as any);
+      
+      if (!consultor) {
+        return reply.status(404).send({ error: 'Consultor no encontrado' });
+      }
+      
+      return reply.status(200).send(consultor);
+    } catch (error: any) {
+      return reply.status(400).send({ error: error.message });
+    }
+  });
+
+  fastify.delete('/api/consultores/:id', async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const eliminarConsultor = new EliminarConsultor(repositorio);
+      const eliminado = await eliminarConsultor.ejecutar(id);
+      
+      if (!eliminado) {
+        return reply.status(404).send({ error: 'Consultor no encontrado' });
+      }
+      
+      return reply.status(204).send();
+    } catch (error: any) {
+      return reply.status(500).send({ error: error.message });
+    }
+  });
+}

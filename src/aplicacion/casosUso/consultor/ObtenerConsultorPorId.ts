@@ -1,5 +1,5 @@
-import { IConsultor } from "../../../dominio/entidades/IConsultor"; 
-import { IRepositorioConsultor } from "../../../dominio/repositorio/IRepositorioConsultor"; 
+import { IConsultor } from "../../../dominio/entidades/IConsultor";
+import { IRepositorioConsultor } from "../../../dominio/repositorio/IRepositorioConsultor";
 
 export class ObtenerConsultorPorId {
   constructor(private repo: IRepositorioConsultor) {}

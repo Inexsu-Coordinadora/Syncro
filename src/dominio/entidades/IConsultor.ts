@@ -1,7 +1,7 @@
 export interface IConsultor {
-  idConsultor: number;
-  nombreConsultor: string;
-  especialidadConsultor: string;
-  emailConsultor: string;
-  telefonoConsultor?: string;
+  idConsultor: string;
+  nombre: string;
+  emailConsultor: string; 
+  telefono?: string;
+  especialidad?: string;
 }

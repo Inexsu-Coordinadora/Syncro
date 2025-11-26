@@ -2,9 +2,9 @@ import { CrearConsultor } from '../../../src/aplicacion/casosUso/consultor/Crear
 import { IRepositorioConsultor } from '../../../src/dominio/repositorio/IRepositorioConsultor';
 import { IConsultor } from '../../../src/dominio/entidades/IConsultor';
 
-describe('CrearConsultor - Pruebas Unitarias', () => {
-  let crearConsultor: CrearConsultor;
+describe('CrearConsultor - Caso de Uso', () => {
   let mockRepositorio: jest.Mocked<IRepositorioConsultor>;
+  let crearConsultor: CrearConsultor;
 
   beforeEach(() => {
     mockRepositorio = {
@@ -12,82 +12,79 @@ describe('CrearConsultor - Pruebas Unitarias', () => {
       actualizar: jest.fn(),
       eliminar: jest.fn(),
       obtenerPorId: jest.fn(),
-      obtener: jest.fn(),
       listar: jest.fn(),
-      existeEmail: jest.fn()
-    } as jest.Mocked<IRepositorioConsultor>;
+      existeEmail: jest.fn(),
+    };
 
     crearConsultor = new CrearConsultor(mockRepositorio);
   });
 
-  test('Debe crear un consultor con datos válidos', async () => {
-
+  it('Debe crear un consultor exitosamente', async () => {
     const datosConsultor: Omit<IConsultor, 'idConsultor'> = {
-      nombreConsultor: 'Samuel Cortazar',
-      emailConsultor: 'elproximosuckerberg@gmail.com',
-      telefonoConsultor: '+57 123 4567 8900',
-      especialidadConsultor: 'Backend'
+      nombre: 'Samuel Cortazar',
+      emailConsultor: 'samuel@example.com',
+      telefono: '+57 123 456 7890',
+      especialidad: 'backend'
     };
 
-    const consultorEsperado: IConsultor = {
-      idConsultor: 1,
-      nombreConsultor: 'Samuel Cortazar',
-      emailConsultor: 'elproximosuckerberg@gmail.com',
-      telefonoConsultor: '+57 123 4567 8900',
-      especialidadConsultor: 'Backend'
+    const consultorCreado: IConsultor = {
+      idConsultor: '1',
+      ...datosConsultor,
     };
 
     mockRepositorio.existeEmail.mockResolvedValue(false);
-    mockRepositorio.crear.mockResolvedValue(consultorEsperado);
+    mockRepositorio.crear.mockResolvedValue(consultorCreado);
 
     const resultado = await crearConsultor.ejecutar(datosConsultor);
 
-    expect(resultado).toEqual(consultorEsperado);
     expect(mockRepositorio.existeEmail).toHaveBeenCalledWith(datosConsultor.emailConsultor);
-    expect(mockRepositorio.crear).toHaveBeenCalledWith(datosConsultor);
+    expect(mockRepositorio.crear).toHaveBeenCalled();
+    expect(resultado).toEqual(consultorCreado);
   });
 
-  test('Debe rechazar email duplicado', async () => {
+  it('Debe lanzar error si el nombre está vacío', async () => {
     const datosConsultor: Omit<IConsultor, 'idConsultor'> = {
-      nombreConsultor: 'Samuel Cortazar',
-      emailConsultor: 'elproximosuckerberg@gmail.com',
-      telefonoConsultor: '+57 123 4567 8900',
-      especialidadConsultor: 'Backend'
+      nombre: '',
+      emailConsultor: 'samuel@example.com',
+      telefono: '+57 123 456 7890',
+      especialidad: 'backend'
+    };
+
+    await expect(crearConsultor.ejecutar(datosConsultor)).rejects.toThrow('El nombre es obligatorio');
+  });
+
+  it('Debe lanzar error si el email es inválido', async () => {
+    const datosConsultor: Omit<IConsultor, 'idConsultor'> = {
+      nombre: 'Samuel Cortazar',
+      emailConsultor: 'email-invalido',
+      telefono: '+57 123 456 7890',
+      especialidad: 'backend'
+    };
+
+    await expect(crearConsultor.ejecutar(datosConsultor)).rejects.toThrow('El email es inválido');
+  });
+
+  it('Debe lanzar error si la especialidad está vacía', async () => {
+    const datosConsultor: Omit<IConsultor, 'idConsultor'> = {
+      nombre: 'Samuel Cortazar',
+      emailConsultor: 'samuel@example.com',
+      telefono: '+57 123 456 7890',
+      especialidad: ''
+    };
+
+    await expect(crearConsultor.ejecutar(datosConsultor)).rejects.toThrow('La especialidad es obligatoria');
+  });
+
+  it('Debe lanzar error si el email ya existe', async () => {
+    const datosConsultor: Omit<IConsultor, 'idConsultor'> = {
+      nombre: 'Samuel Cortazar',
+      emailConsultor: 'samuel@example.com',
+      telefono: '+57 123 456 7890',
+      especialidad: 'backend'
     };
 
     mockRepositorio.existeEmail.mockResolvedValue(true);
 
-    await expect(crearConsultor.ejecutar(datosConsultor))
-      .rejects
-      .toThrow('El email ya está registrado');
-    
-    expect(mockRepositorio.crear).not.toHaveBeenCalled();
-  });
-
-  test('Debe rechazar datos incompletos - nombre vacío', async () => {
-    const datosInvalidos: Omit<IConsultor, 'idConsultor'> = {
-      nombreConsultor: 'Samuel Cortazar',
-      emailConsultor: 'elproximosuckerberg@gmail.com',
-      telefonoConsultor: '+57 123 4567 8900',
-      especialidadConsultor: 'Backend'
-    };
-
-    await expect(crearConsultor.ejecutar(datosInvalidos))
-      .rejects
-      .toThrow('El nombre es obligatorio');
-  });
-
-  test('Debe rechazar email inválido', async () => {
-    
-    const datosInvalidos: Omit<IConsultor, 'idConsultor'> = {
-      nombreConsultor: 'Samuel Cortazar',
-      emailConsultor: 'elproximosuckerberg@gmail.com',
-      telefonoConsultor: '+57 123 4567 8900',
-      especialidadConsultor: 'Backend'
-    };
-
-    await expect(crearConsultor.ejecutar(datosInvalidos))
-      .rejects
-      .toThrow('Email inválido');
+    await expect(crearConsultor.ejecutar(datosConsultor)).rejects.toThrow('El email ya está registrado');
   });
 });

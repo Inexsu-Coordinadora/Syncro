@@ -1,100 +1,112 @@
-import { FastifyInstance } from 'fastify';
-import { IConsultor } from "../../dominio/entidades/IConsultor"; 
-import { IRepositorioConsultor } from "../../dominio/repositorio/IRepositorioConsultor";  
+import { IConsultor } from '../../dominio/entidades/IConsultor';
+import { Pool } from 'pg';
 
-export class RepositorioConsultorPostgres implements IRepositorioConsultor {
-  constructor(private servidor: FastifyInstance) {}
+export class ConsultorRepositorio {
+  constructor(private pool: Pool) {}
 
-  async crear(consultor: IConsultor): Promise<IConsultor> {
-    const cliente = await this.servidor.pg.connect();
-    try {
+  private mapearDesdeDB(row: any): IConsultor {
+    return {
+      idConsultor: row.id_consultor.toString(),
+      nombre: row.nombre,
+      emailConsultor: row.email_consultor,
+      telefono: row.telefono,
+      especialidad: row.especialidad
+    };
+  }
 
-      const existente = await cliente.query(
-      'SELECT 1 FROM consultores WHERE "idConsultor" = $1',
-      [consultor.idConsultor]
-    );
+  async crear(datos: Omit<IConsultor, 'idConsultor'>): Promise<IConsultor> {
+    const query = `
+      INSERT INTO consultores (nombre, email_consultor, telefono, especialidad)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `;
     
-    if (existente.rows.length > 0) {
-      throw new Error('El consultor ya existe');
-    }
-      const resultado = await cliente.query(
-        'INSERT INTO consultores ("idConsultor", "nombreConsultor", "especialidadConsultor", "emailConsultor", "telefonoConsultor") VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [
-          consultor.idConsultor, 
-          consultor.nombreConsultor, 
-          consultor.especialidadConsultor, 
-          consultor.emailConsultor, 
-          consultor.telefonoConsultor
-        ]
-      );
-      return resultado.rows[0];
-    } catch (error) {
-      throw new Error(`Error al crear consultor: ${error}`);
-    } finally {
-      cliente.release();
-    }
+    const valores = [
+      datos.nombre,
+      datos.emailConsultor,
+      datos.telefono || null,
+      datos.especialidad || null
+    ];
+
+    const resultado = await this.pool.query(query, valores);
+    return this.mapearDesdeDB(resultado.rows[0]);
   }
 
-  async actualizar(idConsultor: string, consultor: IConsultor): Promise<IConsultor | null> {
-    const cliente = await this.servidor.pg.connect();
-    try {
-      const resultado = await cliente.query(
-        'UPDATE consultores SET "nombreConsultor" = $1, "especialidadConsultor" = $2, "emailConsultor" = $3, "telefonoConsultor" = $4 WHERE "idConsultor" = $5 RETURNING *',
-        [
-          consultor.nombreConsultor, 
-          consultor.especialidadConsultor, 
-          consultor.emailConsultor, 
-          consultor.telefonoConsultor, 
-          idConsultor
-        ]
-      );
-      return resultado.rows[0] || null;
-    } catch (error) {
-      throw new Error(`Error al actualizar consultor: ${error}`);
-    } finally {
-      cliente.release();
-    }
+  async listar(): Promise<IConsultor[]> {
+    const query = 'SELECT * FROM consultores ORDER BY id_consultor'; //
+    const resultado = await this.pool.query(query);
+    return resultado.rows.map(row => this.mapearDesdeDB(row));
   }
 
-  async eliminar(idConsultor: string): Promise<boolean> {
-    const cliente = await this.servidor.pg.connect();
-    try {
-      const resultado = await cliente.query(
-        'DELETE FROM consultores WHERE "idConsultor" = $1',
-        [idConsultor]
-      );
-      return (resultado.rowCount ?? 0) > 0;
-    } catch (error) {
-      throw new Error(`Error al eliminar consultor: ${error}`);
-    } finally {
-      cliente.release();
+  async obtenerPorId(id: string): Promise<IConsultor | null> {
+    const query = 'SELECT * FROM consultores WHERE id_consultor = $1';
+    const resultado = await this.pool.query(query, [id]);
+    
+    if (resultado.rows.length === 0) {
+      return null;
     }
+    
+    return this.mapearDesdeDB(resultado.rows[0]);
   }
 
-  async obtener(): Promise<IConsultor[]> {
-    const cliente = await this.servidor.pg.connect();
-    try {
-      const resultado = await cliente.query('SELECT * FROM consultores');
-      return resultado.rows;
-    } catch (error) {
-      throw new Error(`Error al obtener consultores: ${error}`);
-    } finally {
-      cliente.release();
-    }
+  async obtenerTodos(): Promise<IConsultor[]> {
+    const query = 'SELECT * FROM consultores ORDER BY id_consultor'; 
+    const resultado = await this.pool.query(query);
+    return resultado.rows.map(row => this.mapearDesdeDB(row));
   }
 
-  async obtenerPorId(idConsultor: string): Promise<IConsultor | null> {
-    const cliente = await this.servidor.pg.connect();
-    try {
-      const resultado = await cliente.query(
-        'SELECT * FROM consultores WHERE "idConsultor" = $1',
-        [idConsultor]
-      );
-      return resultado.rows[0] || null;
-    } catch (error) {
-      throw new Error(`Error al obtener consultor por ID: ${error}`);
-    } finally {
-      cliente.release();
+  async actualizar(id: string, datos: Partial<Omit<IConsultor, 'idConsultor'>>): Promise<IConsultor | null> {
+    const campos: string[] = [];
+    const valores: any[] = [];
+    let contador = 1;
+
+    if (datos.nombre !== undefined) {
+      campos.push(`nombre = $${contador++}`);
+      valores.push(datos.nombre);
     }
+    if (datos.emailConsultor !== undefined) {
+      campos.push(`email_consultor = $${contador++}`);
+      valores.push(datos.emailConsultor);
+    }
+    if (datos.telefono !== undefined) {
+      campos.push(`telefono = $${contador++}`);
+      valores.push(datos.telefono);
+    }
+    if (datos.especialidad !== undefined) {
+      campos.push(`especialidad = $${contador++}`);
+      valores.push(datos.especialidad);
+    }
+
+    if (campos.length === 0) {
+      return this.obtenerPorId(id);
+    }
+
+    valores.push(id);
+    const query = `
+      UPDATE consultores 
+      SET ${campos.join(', ')}
+      WHERE id_consultor = $${contador}
+      RETURNING *
+    `;
+
+    const resultado = await this.pool.query(query, valores);
+    
+    if (resultado.rows.length === 0) {
+      return null;
+    }
+    
+    return this.mapearDesdeDB(resultado.rows[0]);
+  }
+
+  async eliminar(id: string): Promise<boolean> {
+    const query = 'DELETE FROM consultores WHERE id_consultor = $1';
+    const resultado = await this.pool.query(query, [id]);
+    return resultado.rowCount !== null && resultado.rowCount > 0;
+  }
+
+  async existeEmail(email: string): Promise<boolean> {
+    const query = 'SELECT EXISTS(SELECT 1 FROM consultores WHERE email_consultor = $1)';
+    const resultado = await this.pool.query(query, [email]);
+    return resultado.rows[0].exists;
   }
 }

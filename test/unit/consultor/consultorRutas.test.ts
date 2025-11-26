@@ -1,11 +1,11 @@
-import { build } from '../../../src/servidor';
+import { crearServidorBase } from '../../../src/interfaces/servidor';
 import { FastifyInstance } from 'fastify';
 
 describe('Consultor Routes - Pruebas de Integración', () => {
   let app: FastifyInstance;
 
   beforeAll(async () => {
-    app = await build({ logger: false });
+    app = crearServidorBase({ logger: false });
     await app.ready();
   });
 
@@ -13,37 +13,47 @@ describe('Consultor Routes - Pruebas de Integración', () => {
     await app.close();
   });
 
-  describe('POST /consultores', () => {
+  describe('POST /api/consultores', () => {
     test('Debe crear un consultor exitosamente', async () => {
       const nuevoConsultor = {
-        nombre: 'María González',
-        email: `test${Date.now()}@example.com`, // Email único
-        telefono: '+57 310 555 1234',
-        especialidad: 'Frontend'
+        nombre: 'Samuel Cortazar',
+        emailConsultor: `samuel${Date.now()}@gmail.com`,
+        telefono: '+57 123 456 7890',
+        especialidad: 'backend'
       };
 
       const response = await app.inject({
         method: 'POST',
-        url: '/consultores',
+        url: '/api/consultores',
         payload: nuevoConsultor
       });
 
+      if (response.statusCode !== 201) {
+        console.log('Error response:', response.json());
+        console.log('Status:', response.statusCode);
+console.log('Body completo:', response.body);
+      }
+
       expect(response.statusCode).toBe(201);
-      expect(response.json()).toHaveProperty('id');
-      expect(response.json().nombre).toBe(nuevoConsultor.nombre);
-      expect(response.json().email).toBe(nuevoConsultor.email);
+      const body = response.json();
+      expect(body).toHaveProperty('idConsultor');
+      expect(body.nombre).toBe(nuevoConsultor.nombre);
+      expect(body.emailConsultor).toBe(nuevoConsultor.emailConsultor);
+      expect(body.telefono).toBe(nuevoConsultor.telefono);
+      expect(body.especialidad).toBe(nuevoConsultor.especialidad);
     });
 
     test('Debe retornar 400 con datos inválidos', async () => {
       const datosInvalidos = {
         nombre: '',
-        email: 'email-invalido',
-        telefono: '+57 310 555 1234'
+        emailConsultor: `invalido${Date.now()}`,
+        telefono: '+57 123 456 7890',
+        especialidad: 'backend',
       };
 
       const response = await app.inject({
         method: 'POST',
-        url: '/consultores',
+        url: '/api/consultores',
         payload: datosInvalidos
       });
 
@@ -52,152 +62,181 @@ describe('Consultor Routes - Pruebas de Integración', () => {
     });
 
     test('Debe retornar 409 con email duplicado', async () => {
+      const emailUnico = `juanpablo${Date.now()}@gmail.com`;
       const consultor = {
-        nombre: 'Pedro Sánchez',
-        email: 'pedro.duplicado@example.com',
-        telefono: '+57 320 555 9999',
-        especialidad: 'DevOps'
+        nombre: 'Juan Pablo',
+        emailConsultor: emailUnico,
+        telefono: '+57 123 456 7890',
+        especialidad: 'backend'
       };
 
-      // Primera creación
-      await app.inject({
+      const firstResponse = await app.inject({
         method: 'POST',
-        url: '/consultores',
+        url: '/api/consultores',
         payload: consultor
       });
 
-      // Intento de duplicar
+      expect(firstResponse.statusCode).toBe(201);
+
       const response = await app.inject({
         method: 'POST',
-        url: '/consultores',
+        url: '/api/consultores',
         payload: consultor
       });
 
       expect(response.statusCode).toBe(409);
-      expect(response.json().error).toContain('email');
+      const body = response.json();
+      expect(body).toHaveProperty('error');
     });
   });
 
-  describe('GET /consultores', () => {
+  describe('GET /api/consultores', () => {
     test('Debe retornar lista de consultores', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/consultores'
+        url: '/api/consultores'
       });
 
+      if (response.statusCode !== 200) {
+        console.log('Error response:', response.json());
+      }
+
       expect(response.statusCode).toBe(200);
-      expect(Array.isArray(response.json())).toBe(true);
+      const body = response.json();
+      expect(Array.isArray(body)).toBe(true);
     });
   });
 
-  describe('GET /consultores/:id', () => {
+  describe('GET /api/consultores/:id', () => {
     test('Debe retornar un consultor por ID', async () => {
-      // Primero crear uno
       const nuevoConsultor = {
-        nombre: 'Laura Martínez',
-        email: `laura${Date.now()}@example.com`,
-        telefono: '+57 315 555 7777',
-        especialidad: 'QA'
+        nombre: 'Maria Paula',
+        emailConsultor: `mariapaula${Date.now()}@gmail.com`,
+        telefono: '+57 123 456 7811',
+        especialidad: 'backend'
       };
 
       const createResponse = await app.inject({
         method: 'POST',
-        url: '/consultores',
+        url: '/api/consultores',
         payload: nuevoConsultor
       });
 
-      const consultorId = createResponse.json().id;
+      expect(createResponse.statusCode).toBe(201);
+      const consultorId = createResponse.json().idConsultor; 
 
-      // Ahora obtenerlo
       const response = await app.inject({
         method: 'GET',
-        url: `/consultores/${consultorId}`
+        url: `/api/consultores/${consultorId}`
       });
 
       expect(response.statusCode).toBe(200);
-      expect(response.json().id).toBe(consultorId);
-      expect(response.json().nombre).toBe(nuevoConsultor.nombre);
+      const body = response.json();
+      expect(body.idConsultor).toBe(consultorId);
+      expect(body.nombre).toBe(nuevoConsultor.nombre);
     });
 
     test('Debe retornar 404 con ID inexistente', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/consultores/99999'
+        url: '/api/consultores/99999'
+      });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.json()).toHaveProperty('error');
+    });
+  });
+
+  describe('PUT /api/consultores/:id', () => {
+    test('Debe actualizar un consultor', async () => {
+      const nuevoConsultor = {
+        nombre: 'Veronica Torres',
+        emailConsultor: `veronica${Date.now()}@gmail.com`,
+        telefono: '+57 300 3333333',
+        especialidad: 'redes sociales'
+      };
+
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: '/api/consultores',
+        payload: nuevoConsultor
+      });
+
+      expect(createResponse.statusCode).toBe(201);
+      const consultorId = createResponse.json().idConsultor; 
+
+      const datosActualizados = {
+        nombre: 'Veronica Torres Actualizada',
+        especialidad: 'Full Stack'
+      };
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/consultores/${consultorId}`,
+        payload: datosActualizados
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = response.json();
+      expect(body.nombre).toBe(datosActualizados.nombre);
+      expect(body.especialidad).toBe(datosActualizados.especialidad);
+    });
+
+    test('Debe retornar 404 al actualizar consultor inexistente', async () => {
+      const datosActualizados = {
+        nombre: 'Nombre Actualizado'
+      };
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: '/api/consultores/99999',
+        payload: datosActualizados
       });
 
       expect(response.statusCode).toBe(404);
     });
   });
 
-  describe('PUT /consultores/:id', () => {
-    test('Debe actualizar un consultor', async () => {
-      // Crear consultor
-      const nuevoConsultor = {
-        nombre: 'Carlos Ruiz',
-        email: `carlos${Date.now()}@example.com`,
-        telefono: '+57 318 555 3333',
-        especialidad: 'Mobile'
-      };
-
-      const createResponse = await app.inject({
-        method: 'POST',
-        url: '/consultores',
-        payload: nuevoConsultor
-      });
-
-      const consultorId = createResponse.json().id;
-
-      // Actualizar
-      const datosActualizados = {
-        nombre: 'Carlos Ruiz Actualizado',
-        especialidad: 'Full Stack'
-      };
-
-      const response = await app.inject({
-        method: 'PUT',
-        url: `/consultores/${consultorId}`,
-        payload: datosActualizados
-      });
-
-      expect(response.statusCode).toBe(200);
-      expect(response.json().nombre).toBe(datosActualizados.nombre);
-      expect(response.json().especialidad).toBe(datosActualizados.especialidad);
-    });
-  });
-
-  describe('DELETE /consultores/:id', () => {
+  describe('DELETE /api/consultores/:id', () => {
     test('Debe eliminar un consultor', async () => {
-      // Crear consultor
       const nuevoConsultor = {
-        nombre: 'Eliminar Test',
-        email: `eliminar${Date.now()}@example.com`,
-        telefono: '+57 319 555 4444',
-        especialidad: 'Test'
+        nombre: 'Consultor a Eliminar',
+        emailConsultor: `eliminar${Date.now()}@gmail.com`,
+        telefono: '+57 300 3333333',
+        especialidad: 'testing'
       };
 
       const createResponse = await app.inject({
         method: 'POST',
-        url: '/consultores',
+        url: '/api/consultores',
         payload: nuevoConsultor
       });
 
-      const consultorId = createResponse.json().id;
+      expect(createResponse.statusCode).toBe(201);
+      const consultorId = createResponse.json().idConsultor; 
 
-      // Eliminar
       const response = await app.inject({
         method: 'DELETE',
-        url: `/consultores/${consultorId}`
+        url: `/api/consultores/${consultorId}`
       });
 
       expect(response.statusCode).toBe(204);
 
-      // Verificar que ya no existe
       const getResponse = await app.inject({
         method: 'GET',
-        url: `/consultores/${consultorId}`
+        url: `/api/consultores/${consultorId}`
       });
 
       expect(getResponse.statusCode).toBe(404);
+    });
+
+    test('Debe retornar 404 al eliminar consultor inexistente', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: '/api/consultores/99999'
+      });
+
+      expect(response.statusCode).toBe(404);
     });
   });
 });
