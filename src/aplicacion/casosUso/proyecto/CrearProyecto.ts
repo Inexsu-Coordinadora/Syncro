@@ -1,6 +1,8 @@
-import { IRepositorioProyecto } from "../../../dominio/repositorio/IRepositorioProyecto";
-import { IProyecto } from "../../../dominio/entidades/IProyecto";
 
+import { IProyecto } from '../../../dominio/entidades/IProyecto';
+import { IRepositorioProyecto } from '../../../dominio/repositorio/IRepositorioProyecto';
+
+// Caso de uso para crear un nuevo proyecto
 export class CrearProyecto {
     constructor(private repo: IRepositorioProyecto) {}
 
