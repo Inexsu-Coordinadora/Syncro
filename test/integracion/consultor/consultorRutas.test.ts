@@ -1,4 +1,4 @@
-import { crearServidorBase } from '../../../src/interfaces/servidor';
+import { crearServidorBase } from '../../../src/interfaces/rutas/servidor'; 
 import { FastifyInstance } from 'fastify';
 
 describe('Consultor Routes - Pruebas de Integración', () => {

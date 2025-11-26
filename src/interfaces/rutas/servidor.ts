@@ -14,7 +14,7 @@ export function crearServidorBase(opts = {}): FastifyInstance {
 
   app.decorate('pool', pool);
 
-  app.register(require('./rutas/consultorRutas'), { pool });
+  app.register(require('./consultorRutas'), { pool });
 
   app.addHook('onClose', async (instance) => {
     await pool.end();
