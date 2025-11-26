@@ -4,6 +4,7 @@ import { IRepositorioProyecto } from "../../dominio/repositorio/IRepositorioProy
 import { NotFoundError } from "../../aplicacion/errors/NotFoundError";
 import { PersistenceError } from "../../aplicacion/errors/PersistenceError";
 
+
 export class RepositorioProyectoPostgres implements IRepositorioProyecto {
   constructor(private servidor: FastifyInstance) { }
 

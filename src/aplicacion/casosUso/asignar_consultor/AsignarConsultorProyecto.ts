@@ -13,12 +13,14 @@ export class AsignarConsultorProyecto {
   async ejecutar(datos: IAsignacion): Promise<IAsignacion> {
     const { consultorId, proyectoId, fechaInicio, fechaFin, rolConsultor, porcentajeDedicacion } = datos;
 
+
     // 1. Verificar existencia de consultor y proyecto
     const proyectoExiste = await this.repoProyecto.obtenerProyectoPorId(proyectoId);
    const consultorExiste = await this.repoConsultor.obtenerPorId(consultorId);
     if (!proyectoExiste) throw new Error(`Proyecto ${proyectoId} inexistente.`);
    if (!consultorExiste) throw new Error(`Consultor ${consultorId} inexistente.`);
 
+    
     // 2. Validar fechas (fin no puede ser anterior a inicio)
     if (fechaFin < fechaInicio) throw new Error("Fechas inválidas (fin no puede ser anterior a inicio).");
 
@@ -34,7 +36,6 @@ export class AsignarConsultorProyecto {
     if (dedicacionAcumulada > 100) {
       throw new Error(`Exceso de dedicación (>100% por superposición con otras asignaciones). Dedicación resultante: ${dedicacionAcumulada}%.`);
     }
-    
 
     return this.repoAsignacion.crearAsignacion(datos);
   }

@@ -4,10 +4,9 @@ export interface IRepositorioProyecto {
     listarProyectos(): Promise<IProyecto[]>;
 
     obtenerProyectoPorId(id: string): Promise<IProyecto | null>;
-
-    crearProyecto(proyecto: IProyecto): Promise<IProyecto>;
-
-    actualizarProyecto(id: string, datos: IProyecto): Promise<IProyecto | null>;
-
-    eliminarProyecto(id: string): Promise<boolean>;
+    actualizarProyecto(id: string,
+        datosProyecto: IProyecto
+    ): Promise<IProyecto | null>;
+    eliminarProyecto(id: string): Promise<string>;
+    
 }
