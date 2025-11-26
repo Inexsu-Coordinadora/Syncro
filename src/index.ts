@@ -2,6 +2,9 @@ import Fastify from "fastify";
 import dotenv from "dotenv";
 import fastifyPostgres from "@fastify/postgres";
 
+// CONFIG
+import { configurarConexionBD } from "./configuracion/conexionBD";
+
 // RUTAS
 import { clienteRutas } from "./interfaces/rutas/clienteRutas";
 import { proyectoRutas } from "./interfaces/rutas/proyectoRutas";
@@ -40,47 +43,40 @@ import { EliminarTarea } from "./aplicacion/casosUso/tarea/EliminarTarea";
 import { AsignarConsultorProyecto } from "./aplicacion/casosUso/asignar_consultor/AsignarConsultorProyecto";
 
 dotenv.config();
+
 const PUERTO = process.env.PUERTO || 3000;
-
-// Crear servidor Fastify
 const app = Fastify({ logger: true });
-
-// Registro de plugin PostgreSQL
-app.register(fastifyPostgres, {
-  connectionString: process.env.DATABASE_URL,
-});
 
 async function start() {
   try {
-    // REPOSITORIOS
+    await configurarConexionBD(app);
+
+    // REGISTRAR REPOSITORIOS
     const repoClientes = new RepositorioClientePostgres(app);
     const repoProyectos = new RepositorioProyectoPostgres(app);
     const repoTareas = new RepositorioTareaPostgres(app);
     const repoConsultores = new RepositorioConsultorPostgres(app);
     const repoAsignaciones = new RepositorioAsignacionPG(app);
 
-    // CASOS DE USO CLIENTE
+    // INSTANCIAR CASOS DE USO
     const crearCliente = new CrearCliente(repoClientes);
     const listarClientes = new ListarClientes(repoClientes);
     const obtenerClientePorId = new ObtenerClientePorId(repoClientes);
     const actualizarCliente = new ActualizarCliente(repoClientes);
     const eliminarCliente = new EliminarCliente(repoClientes);
 
-    // CASOS DE USO PROYECTO
     const crearProyecto = new CrearProyecto(repoProyectos);
     const listarProyectos = new ListarProyectos(repoProyectos);
     const obtenerProyectoPorId = new ObtenerProyectoPorId(repoProyectos);
     const actualizarProyecto = new ActualizarProyecto(repoProyectos);
     const eliminarProyecto = new EliminarProyecto(repoProyectos);
 
-    // CASOS DE USO TAREA
     const crearTarea = new CrearTarea(repoTareas);
     const listarTareas = new ListarTareas(repoTareas);
     const obtenerTareaPorId = new ObtenerTareaPorId(repoTareas);
     const actualizarTarea = new ActualizarTarea(repoTareas);
     const eliminarTarea = new EliminarTarea(repoTareas);
 
-    // CASO DE USO ASIGNACIÓN CONSULTOR
     const asignarConsultor = new AsignarConsultorProyecto(
       repoAsignaciones,
       repoProyectos,
@@ -88,29 +84,25 @@ async function start() {
     );
 
     // REGISTRO DE RUTAS
-    app.register(
-      clienteRutas(crearCliente, listarClientes, obtenerClientePorId, actualizarCliente, eliminarCliente),
-      { prefix: "/api/clientes" }
-    );
+    app.register(clienteRutas(crearCliente, listarClientes, obtenerClientePorId, actualizarCliente, eliminarCliente), {
+      prefix: "/api/clientes",
+    });
 
-    app.register(
-      proyectoRutas(crearProyecto, listarProyectos, obtenerProyectoPorId, actualizarProyecto, eliminarProyecto),
-      { prefix: "/api/proyectos" }
-    );
+    app.register(proyectoRutas(crearProyecto, listarProyectos, obtenerProyectoPorId, actualizarProyecto, eliminarProyecto), {
+      prefix: "/api/proyectos",
+    });
 
-    app.register(
-      tareaRutas(crearTarea, listarTareas, obtenerTareaPorId, actualizarTarea, eliminarTarea),
-      { prefix: "/api/tareas" }
-    );
+    app.register(tareaRutas(crearTarea, listarTareas, obtenerTareaPorId, actualizarTarea, eliminarTarea), {
+      prefix: "/api/tareas",
+    });
 
-    app.register(
-      asignacionRutas(asignarConsultor),
-      { prefix: "/api/asignaciones" }
-    );
+    app.register(asignacionRutas(asignarConsultor), {
+      prefix: "/api/asignaciones",
+    });
 
     // INICIAR SERVIDOR
     await app.listen({ port: Number(PUERTO), host: "0.0.0.0" });
-    console.log(`Servidor iniciado en http://localhost:${PUERTO}`);
+    console.log(` Servidor iniciado en http://localhost:${PUERTO}`);
   } catch (err: any) {
     app.log.error(err);
     process.exit(1);
@@ -118,4 +110,3 @@ async function start() {
 }
 
 start();
-
