@@ -29,12 +29,12 @@ describe("Casos de Uso - Proyecto", () => {
       idProyecto: "1",
       nombreProyecto: "Proyecto A",
       descripcionProyecto: "Descripción",
-      fecha_inicio: new Date(),
-      fecha_fin: new Date(),
+      fechaInicio: new Date(),
+      fechaFin: new Date(),
       estadoProyecto: "Planificado",
       clienteId: "cliente-1",
-      consultor_asignado: "consultor-1",
-      roles_definidos: "rol1",
+      consultorAsignado: "consultor-1",
+      rolesDefinidos: "rol1",
     };
 
     it("Debe crear un proyecto con estado 'Planificado'", async () => {
