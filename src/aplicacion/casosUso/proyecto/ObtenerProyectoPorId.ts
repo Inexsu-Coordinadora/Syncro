@@ -8,6 +8,7 @@ export class ObtenerProyectoPorId {
 async ejecutar(id: string): Promise<IProyecto> {
     const proyecto = await this.repo.obtenerProyectoPorId(id);
     if (!proyecto) {
+      
         throw new NotFoundError(`Proyecto con ID ${id} no encontrado.`);
     }
     return proyecto;

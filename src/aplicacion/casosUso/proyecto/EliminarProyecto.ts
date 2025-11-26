@@ -7,6 +7,7 @@ export class EliminarProyecto {
 async ejecutar(id: string): Promise<string> {
     const proyectoEliminado = await this.repo.eliminarProyecto(id);
     if (!proyectoEliminado) {
+      
         throw new NotFoundError(`Proyecto con ID ${id} no encontrado para eliminar.`);
     }
     return `Proyecto ${id} eliminado con éxito.`;

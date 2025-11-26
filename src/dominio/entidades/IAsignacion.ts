@@ -1,4 +1,5 @@
 export interface IAsignacion {
+    
     idAsignacion? : number;
     consultorId: string;
     proyectoId: string;
@@ -6,5 +7,5 @@ export interface IAsignacion {
     porcentajeDedicacion: number;
     fechaInicio: Date;
     fechaFin: Date;
-    
+
 }
