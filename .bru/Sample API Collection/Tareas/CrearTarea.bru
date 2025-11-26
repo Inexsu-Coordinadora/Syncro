@@ -1,0 +1,26 @@
+meta {
+  name: CrearTarea
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/tareas
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "codigo_tarea": "T-00",
+    "nombre_tarea": "Ajustes proyecto",
+    "estado": "completada",
+    "fecha_limite": "2025-12-01T00:00:00Z",
+    "id_proyecto": "d12e0573-d2d0-4eed-9de0-3cf039dc5e5b"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

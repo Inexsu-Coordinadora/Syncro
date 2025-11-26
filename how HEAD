@@ -1,0 +1,26 @@
+[33md5bc81f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m feat: CRUD completo de proyectos con validación y persistencia en Postgres
+[33m4fb7a74[m feat: CRUD completo de proyectos con validación y persistencia en Postgres
+[33m2dd22aa[m refactor: unificar rutas de cliente, proyecto y tarea con validación Zod y errores NotFoundError/ValidationError/PersistenceError
+[33m331af41[m se relaizan correcciones
+[33m5688581[m correccion de encarpetado
+[33m3207d0f[m migraciones tablaproyectos
+[33m524afd4[m Merge branch 'release/sprint-1' of https://github.com/Inexsu-Coordinadora/Syncro into dev
+[33mae3ff92[m bruno
+[33maaabd33[m[33m ([m[1;31morigin/release/sprint-1[m[33m, [m[1;32mrelease/sprint-1[m[33m)[m actualizacion de carpetas y creacion de 001_tablaproyectos.sql
+[33m09c76c6[m Merge actualizado e iniciando desde index.js
+[33m96c766b[m Anexo .env, cambios  index.ts, servidor.ts
+[33m585e830[m Merge branch 'JuanPablo' of https://github.com/Inexsu-Coordinadora/Syncro into release/sprint-1
+[33m73fac1c[m Anexo de Interfaces y rutas de Proyecto
+[33mb650e09[m Merge branch 'JuanPablo' of https://github.com/Inexsu-Coordinadora/Syncro into release/sprint-1
+[33md573685[m Configuración de archivos CRUD
+[33m3258a9d[m Feat: actualización servidor.ts para optimizar el contenido y las redes. index.ts unificado como inicializador del proyecto.
+[33md4c105b[m Merge branch 'JuanPablo' of github.com:Inexsu-Coordinadora/Syncro into release/sprint-1
+[33mc013390[m Ajustes archivos no necesarios.
+[33mfc6de7c[m Revert "Merge branch 'JuanPablo' of github.com:Inexsu-Coordinadora/Syncro into release/sprint-1. Se agrega CRUD Proyecto, y conexión a base de datos."
+[33mfa82425[m Merge branch 'JuanPablo' of github.com:Inexsu-Coordinadora/Syncro into release/sprint-1. Se agrega CRUD Proyecto, y conexión a base de datos.
+[33m12e1d8b[m[33m ([m[1;31morigin/MariaPaula[m[33m, [m[1;32mMariaPaula[m[33m)[m finalizacion de casos de uso
+[33m8471f8d[m Feat: Proyectos - CRUD y conexión a base de datos
+[33m152ef43[m servidor.ts modificado
+[33ma5254d9[m se crean casos de uso y conexión con base de datos
+[33m1a89489[m creacion de casos de uso
+[33m1250c82[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Inicio de Proyecto y creacion de carpetas

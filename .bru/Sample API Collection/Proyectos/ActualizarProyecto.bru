@@ -1,0 +1,30 @@
+meta {
+  name: ActualizarProyecto
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3000/api/proyectos/d12e0573-d2d0-4eed-9de0-3cf039dc5e5b
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "codigo_proyecto": "P-001",
+    "nombre_proyecto": "Sistema de Validación Actualizado",
+    "descripcion_proyecto": "Descripción modificada",
+    "fecha_inicio": "2025-11-24",
+    "fecha_fin": "2025-12-20",
+    "estado_proyecto": "Finalizado",
+    "id_cliente":"69c63eeb-56a5-4fd7-8bc9-b9e3b3a0845c",
+    "consultor_asignado": null,
+    "roles_definidos": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
