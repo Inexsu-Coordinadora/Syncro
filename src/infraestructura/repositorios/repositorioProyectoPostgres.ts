@@ -5,25 +5,28 @@ import { IRepositorioProyecto } from '../../dominio/repositorio/IRepositorioProy
 export class RepositorioProyectoPostgres implements IRepositorioProyecto {
   constructor(private servidor: FastifyInstance) {}
 
+  // LISTAR
   async listarProyectos(): Promise<IProyecto[]> {
     const cliente = await this.servidor.pg.connect();
     const resultado = await cliente.query(
-      'SELECT * FROM proyectos ORDER BY "idProyecto" DESC'
+      'SELECT * FROM "proyectos" ORDER BY "idProyecto" DESC'
     );
     cliente.release();
     return resultado.rows;
   }
 
+  // OBTENER POR ID
   async obtenerProyectoPorId(id: string): Promise<IProyecto | null> {
     const cliente = await this.servidor.pg.connect();
     const resultado = await cliente.query(
-      'SELECT * FROM proyectos WHERE "idProyecto" = $1',
+      'SELECT * FROM "proyectos" WHERE "idProyecto" = $1',
       [id]
     );
     cliente.release();
     return resultado.rows.length > 0 ? resultado.rows[0] : null;
   }
 
+  // CREAR
   async crearProyecto(proyecto: IProyecto): Promise<IProyecto> {
     const {
       nombreProyecto,
@@ -38,9 +41,9 @@ export class RepositorioProyectoPostgres implements IRepositorioProyecto {
 
     const cliente = await this.servidor.pg.connect();
     const resultado = await cliente.query(
-      `INSERT INTO proyectos 
+      `INSERT INTO "proyectos" 
         ("nombreProyecto", "descripcionProyecto", "clienteId", "fechaInicio", "fechaFin", "estadoProyecto", "consultorAsignado", "rolesDefinidos")
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [
         nombreProyecto,
@@ -58,6 +61,7 @@ export class RepositorioProyectoPostgres implements IRepositorioProyecto {
     return resultado.rows[0];
   }
 
+  // ACTUALIZAR
   async actualizarProyecto(id: string, proyecto: IProyecto): Promise<IProyecto | null> {
     const {
       nombreProyecto,
@@ -72,7 +76,7 @@ export class RepositorioProyectoPostgres implements IRepositorioProyecto {
 
     const cliente = await this.servidor.pg.connect();
     const resultado = await cliente.query(
-      `UPDATE proyectos
+      `UPDATE "proyectos"
        SET "nombreProyecto" = $1,
            "descripcionProyecto" = $2,
            "clienteId" = $3,
@@ -100,10 +104,11 @@ export class RepositorioProyectoPostgres implements IRepositorioProyecto {
     return resultado.rows.length > 0 ? resultado.rows[0] : null;
   }
 
+  // ELIMINAR
   async eliminarProyecto(id: string): Promise<string> {
     const cliente = await this.servidor.pg.connect();
     const resultado = await cliente.query(
-      'DELETE FROM proyectos WHERE "idProyecto" = $1 RETURNING *',
+      'DELETE FROM "proyectos" WHERE "idProyecto" = $1 RETURNING *',
       [id]
     );
     cliente.release();
