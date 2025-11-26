@@ -1,16 +1,20 @@
 import { z } from "zod";
 
 export const ProyectoEsquema = z.object({
-    codigo_proyecto: z.string().min(1),
-    nombre_proyecto: z.string().min(1),
-    descripcion_proyecto: z.string().min(1),
-    fecha_inicio: z.string().refine((s) => !Number.isNaN(Date.parse(s)), "Fecha inválida"),
-    fecha_fin: z.string().refine((s) => !Number.isNaN(Date.parse(s)), "Fecha inválida").optional(),
-    estado_proyecto: z.enum(["Planificado", "En ejecución", "Finalizado"]),
-    id_cliente: z.string().uuid("El id_cliente debe ser un UUID válido"),
+    nombreProyecto: z.string().min(1, "El nombre del proyecto es obligatorio"),
+    descripcionProyecto: z.string().min(1, "La descripción es obligatoria"),
+
+    clienteId: z.string().uuid("clienteId debe ser un UUID válido"),
+
+    fecha_inicio: z.string()
+        .refine((s) => !Number.isNaN(Date.parse(s)), "Fecha de inicio inválida"),
+
+    fecha_fin: z.string()
+        .refine((s) => !Number.isNaN(Date.parse(s)), "Fecha fin inválida")
+        .optional(),
+
+    estadoProyecto: z.enum(["Planificado", "En ejecución", "Finalizado"] as const, "El estado del proyecto es obligatorio"),
+
     consultor_asignado: z.string().nullable().optional(),
     roles_definidos: z.string().nullable().optional(),
 });
-
-export type ProyectoInput = z.input<typeof ProyectoEsquema>;
-export type ProyectoParsed = z.output<typeof ProyectoEsquema>;
