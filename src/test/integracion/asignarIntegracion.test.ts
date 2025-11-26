@@ -1,10 +1,7 @@
 import supertest from "supertest";
 import { crearServidorTest } from "../helpers/crearServidorTest";
-
 import { asignacionRutas } from "../../interfaces/rutas/asignacionRutas";
-
 import { AsignarConsultorProyecto } from "../../aplicacion/casosUso/asignar_consultor/AsignarConsultorProyecto";
-
 import { RepositorioAsignacionPG } from "../../infraestructura/repositorios/repositorioAsignacionPostgres";
 import { RepositorioProyectoPostgres } from "../../infraestructura/repositorios/repositorioProyectoPostgres";
 import { RepositorioConsultorPostgres } from "../../infraestructura/repositorios/repositorioConsultorPostgres";
