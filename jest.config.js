@@ -24,3 +24,9 @@ export default {
   coverageReporters: ['text', 'lcov', 'html'],
   moduleFileExtensions: ['ts', 'js', 'json'],
 };
+
+/** @type {import("jest").Config} **/
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+};
